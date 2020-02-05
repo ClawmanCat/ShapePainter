@@ -1,6 +1,8 @@
-﻿using ShapePainter.Shapes;
+﻿using Microsoft.Win32;
+using ShapePainter.Shapes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,11 +51,32 @@ namespace ShapePainter {
         }
         public void New(object sender, EventArgs e)
         {
-
+            
         }
-        public void Save(object sender, EventArgs e)
+        private void Save(object sender, EventArgs e)
         {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Rect rect = new Rect(Canvas.RenderSize);
 
+                RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96d, 96d, PixelFormats.Pbgra32);
+
+                Canvas.Measure(new Size((int)Canvas.Width, (int)Canvas.Height));
+                Canvas.Arrange(new Rect(new Size((int)Canvas.Width, (int)Canvas.Height)));
+
+                renderBitmap.Render(Canvas);
+
+                string filename = saveFileDialog.FileName;
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+
+                using (FileStream file = File.Create(filename))
+                {
+                    encoder.Save(file);
+                }
+            }
         }
         public void Open(object sender, EventArgs e)
         {
