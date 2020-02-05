@@ -6,7 +6,13 @@
         xmlns:local="clr-namespace:ShapePainter"
         mc:Ignorable="d"
         Title="MainWindow" Height="1020" Width="1280">
-    <Grid>
-        
-    </Grid>
+    <Grid x:Name="Canvas">
+          <Grid.RowDefinitions>
+               <RowDefinition></RowDefinition>
+          </Grid.RowDefinitions>
+
+          <Grid.ColumnDefinitions>
+               <ColumnDefinition></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+     </Grid>
 </Window>
