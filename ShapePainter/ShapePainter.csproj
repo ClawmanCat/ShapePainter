@@ -56,7 +56,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Shapes\Group.cs" />
+    <Compile Include="Utility\Localized.cs" />
     <Compile Include="Shapes\Shapes.cs" />
+    <Compile Include="Utility\Utility.cs" />
+    <Compile Include="Utility\Variant.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
