@@ -6,13 +6,13 @@
     xmlns:local="clr-namespace:ShapePainter"
     mc:Ignorable="d"
     Title="MainWindow" Height="1020" Width="1280">
-<Grid x:Name="Canvas">
-    <DockPanel>
-        <ToolBarTray DockPanel.Dock="Top">
-            <ToolBar>
-                <Button Click="New">
-                    <StackPanel Orientation="Horizontal">
-                        <Image 
+    <Grid>
+        <DockPanel>
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar>
+                    <Button Click="New">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
                             Source="Icons/NewFile.png" 
                             RenderOptions.BitmapScalingMode="Fant"
                             Stretch="Fill"
@@ -20,12 +20,12 @@
                             VerticalAlignment="Top"
                             Margin="10,0,0,0"
                             HorizontalAlignment="Center"/>
-                        <TextBlock Margin="3,0,0,0">New</TextBlock>
-                    </StackPanel>
-                </Button>
-                <Button Click="Open">
-                    <StackPanel Orientation="Horizontal">
-                        <Image 
+                            <TextBlock Margin="3,0,0,0">New</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="Open">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
                             Source="Icons/Open.png" 
                             RenderOptions.BitmapScalingMode="Fant"
                             Stretch="Fill"
@@ -33,12 +33,12 @@
                             VerticalAlignment="Top"
                             Margin="10,0,0,0"
                             HorizontalAlignment="Center"/>
-                        <TextBlock Margin="3,0,0,0">Open</TextBlock>
-                    </StackPanel>
-                </Button>
-                <Button Click="Save">
-                    <StackPanel Orientation="Horizontal">
-                        <Image 
+                            <TextBlock Margin="3,0,0,0">Open</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="Save">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
                             Source="Icons/Save.png"
                             RenderOptions.BitmapScalingMode="Fant"
                             Stretch="Fill"
@@ -46,12 +46,12 @@
                             VerticalAlignment="Top"
                             Margin="10,0,0,0"
                             HorizontalAlignment="Center"/>
-                        <TextBlock Margin="3,0,0,0">Save</TextBlock>
-                    </StackPanel>
-                </Button>
-                <Button Click="Clear">
-                    <StackPanel Orientation="Horizontal">
-                        <Image 
+                            <TextBlock Margin="3,0,0,0">Save</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="Clear">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
                             Source="Icons/Clear.png" 
                             RenderOptions.BitmapScalingMode="Fant"
                             Stretch="Fill"
@@ -59,14 +59,14 @@
                             VerticalAlignment="Top"
                             Margin="10,0,0,0"
                             HorizontalAlignment="Center"/>
-                        <TextBlock Margin="3,0,0,0">Clear</TextBlock>
-                    </StackPanel>
-                </Button>
-            </ToolBar>
-            <ToolBar>
-                <Button Click="AddEllipse">
-                    <StackPanel Orientation="Horizontal">
-                        <Image 
+                            <TextBlock Margin="3,0,0,0">Clear</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+                <ToolBar>
+                    <Button Click="AddEllipse">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
                             Source="Icons/Ellipse.png"
                             RenderOptions.BitmapScalingMode="Fant"
                             Stretch="Fill"
@@ -74,11 +74,11 @@
                             VerticalAlignment="Top"
                             Margin="0,0,0,0"
                             HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button Click="AddRectangle">
-                    <StackPanel Orientation="Horizontal">
-                        <Image 
+                        </StackPanel>
+                    </Button>
+                    <Button Click="AddRectangle">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
                             Source="Icons/Rectangle.png"
                             RenderOptions.BitmapScalingMode="Fant"
                             Stretch="Fill"
@@ -86,12 +86,14 @@
                             VerticalAlignment="Top"
                             Margin="0,0,0,0"
                             HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button Content="Ornament" Click="AddOrnament"/>
-            </ToolBar>
-        </ToolBarTray>
-        <TextBox AcceptsReturn="True" />
-    </DockPanel>
-</Grid>
+                        </StackPanel>
+                    </Button>
+                    <Button Content="Ornament" Click="AddOrnament"/>
+                </ToolBar>
+            </ToolBarTray>
+            <TextBox AcceptsReturn="True" />
+        </DockPanel>
+        <Grid x:Name="Canvas" Width="1280" Height="1020">
+        </Grid>
+    </Grid>
 </Window>
