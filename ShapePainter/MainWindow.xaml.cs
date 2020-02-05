@@ -40,14 +40,37 @@ namespace ShapePainter {
         }
 
 
-        public void Clear() {
+        public void Clear(object sender, EventArgs e) {
             shapes.Clear();
 
             foreach (var group in shapes) {
                 foreach (var shape in group.Value) Remove(shape, group.Key);
             }
         }
+        public void New(object sender, EventArgs e)
+        {
 
+        }
+        public void Save(object sender, EventArgs e)
+        {
+
+        }
+        public void Open(object sender, EventArgs e)
+        {
+
+        }
+        public void AddEllipse(object sender, EventArgs e)
+        {
+
+        }
+            public void AddRectangle(object sender, EventArgs e)
+            {
+
+            }
+        public void AddOrnament(object sender, EventArgs e)
+        {
+
+        }
 
         protected override void OnRender(DrawingContext ctx) {
 
