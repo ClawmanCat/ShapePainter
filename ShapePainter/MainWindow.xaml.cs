@@ -92,15 +92,13 @@ public partial class MainWindow : Window {
     {
 
             OpenFileDialog openfileDialog = new OpenFileDialog();
-            string directory = System.IO.Path.GetDirectoryName(openfileDialog.FileName);
+            string directory = Path.GetDirectoryName(openfileDialog.FileName);
 
             openfileDialog.Title = "Select a file";
-            openfileDialog.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
-              "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-              "Portable Network Graphic (*.png)|*.png";
+            openfileDialog.Filter = "JPG file(*.jpg)| *.jpg | PNG file(*.png) | *.png";
             if (openfileDialog.ShowDialog() == true)
             {
-                Canvas.Background = new ImageBrush(new Uri(directory, openfileDialog.FileName));
+                Canvas.Background = new ImageBrush(new BitmapImage(new Uri(directory, Convert.ToBoolean(openfileDialog.FileName))));
             }
         }
     public void AddEllipse(object sender, EventArgs e)
