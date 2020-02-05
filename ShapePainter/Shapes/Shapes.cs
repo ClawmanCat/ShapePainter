@@ -12,9 +12,31 @@ namespace ShapePainter.Shapes {
         public static readonly Shape Ellipse = new Ellipse {
             StrokeThickness = 4,
             Stroke = Brushes.Black,
-            Fill = Brushes.OliveDrab,
-            Height = 40,
-            Width = 30,
+            Fill = Brushes.Transparent,
+            Height = 50,
+            Width = 50,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+
+        public static readonly Shape Rectangle = new Rectangle {
+            StrokeThickness = 4,
+            Stroke = Brushes.Black,
+            Fill = Brushes.Transparent,
+            Height = 50,
+            Width = 50,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
+
+        public static readonly Shape SelectionRectangle = new Rectangle {
+            StrokeThickness = 2,
+            Stroke = Brushes.Black,
+            Fill = Brushes.Transparent,
+            Height = 1,
+            Width = 1,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center
         };
