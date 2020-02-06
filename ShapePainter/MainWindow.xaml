@@ -93,12 +93,12 @@
             </ToolBarTray>
             <TextBox AcceptsReturn="True" />
         </DockPanel>
-        <Grid Width="1280" Height="720" >
+        <Grid Width="1280" Height="750" >
         <Canvas 
-               x:Name="Canvas"
-               Background="Transparent"
+            x:Name="Canvas"
+            Background="Transparent"
             Width="1280" 
-            Height="720"
+            Height="750"
           ></Canvas>
         </Grid>
     </Grid>
