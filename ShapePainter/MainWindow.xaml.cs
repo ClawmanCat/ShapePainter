@@ -92,13 +92,13 @@ public partial class MainWindow : Window {
     {
 
             OpenFileDialog openfileDialog = new OpenFileDialog();
-            string directory = Path.GetDirectoryName(openfileDialog.FileName);
 
             openfileDialog.Title = "Select a file";
-            openfileDialog.Filter = "JPG file(*.jpg)| *.jpg | PNG file(*.png) | *.png";
+            openfileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png";
             if (openfileDialog.ShowDialog() == true)
             {
-                Canvas.Background = new ImageBrush(new BitmapImage(new Uri(directory, Convert.ToBoolean(openfileDialog.FileName))));
+                var path = openfileDialog.FileName;
+                Canvas.Background = new ImageBrush(new BitmapImage(new Uri(path)));
             }
         }
     public void AddEllipse(object sender, EventArgs e)
