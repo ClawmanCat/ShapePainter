@@ -25,7 +25,7 @@ namespace ShapePainter.Shapes {
         }
 
 
-        bool ancestor(CanvasObject obj) {
+        public bool ancestor(CanvasObject obj) {
             for (var current = parent; current != null; current = current.parent) {
                 if (current == obj) return true;
             }
