@@ -55,9 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Shapes\Group.cs" />
-    <Compile Include="Utility\Localized.cs" />
-    <Compile Include="Shapes\Shapes.cs" />
+    <Compile Include="Shapes\Canvas\CanvasShape.cs" />
+    <Compile Include="Shapes\Canvas\Visitors\CanvasObjectGenericVisitor.cs" />
+    <Compile Include="Shapes\Canvas\Visitors\ICanvasObjectVisitor.cs" />
+    <Compile Include="Shapes\CloneShape.cs" />
+    <Compile Include="Shapes\Canvas\Group.cs" />
+    <Compile Include="Shapes\Canvas\CanvasObject.cs" />
+    <Compile Include="Shapes\PlatonicForms.cs" />
+    <Compile Include="Utility\Command\ICanvasCommand.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Utility\Variant.cs" />
     <Page Include="MainWindow.xaml">
@@ -109,5 +114,6 @@
     <Resource Include="Icons\Open.png" />
     <Resource Include="Icons\Save.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,6 @@
 ﻿using ShapePainter.Shapes;
 using ShapePainter.Utility;
+using ShapePainter.Utility.Command;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,64 +17,84 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ShapePainter {
-    using LocalizedShape = Localized<Shape>;
-    using Selection = Variant<List<Localized<Shape>>, Group>;
-
     public partial class MainWindow : Window {
-        private Dictionary<Group, List<LocalizedShape>> shapes = new Dictionary<Group, List<LocalizedShape>>();
-        private Selection selection = null;
+        private Dictionary<Group, List<CanvasShape>> objects = new Dictionary<Group, List<CanvasShape>>();
+        private List<CanvasObject> selection = null;
 
         private Point? mouseDownPos = null;
-        private LocalizedShape selectionRect = null;
+        private CanvasShape selectionRect = null;
+
+        private List<ICanvasCommand> history = new List<ICanvasCommand>();
 
 
         public MainWindow() {
             InitializeComponent();
 
+            Add(Group.Global);
+
             // Test shapes
-            Add(
-                new LocalizedShape(
-                    Shapes.Shapes.CloneShape(Shapes.Shapes.Ellipse),
-                    new Point(30, 30)
-                ),
-                Group.Global
-            );
+            Add(new CanvasShape(
+                CloneShape.Clone(PlatonicForms.Ellipse),
+                Group.Global,
+                new Point(30, 30)
+            ));
 
-            Add(
-                new LocalizedShape(
-                    Shapes.Shapes.CloneShape(Shapes.Shapes.Rectangle),
-                    new Point(100, 100)
-                ),
-                Group.Global
-            );
+            Add(new CanvasShape(
+                CloneShape.Clone(PlatonicForms.Rectangle),
+                Group.Global,
+                new Point(500, 300)
+            ));
 
-            Add(
-                new LocalizedShape(
-                    Shapes.Shapes.CloneShape(Shapes.Shapes.Ellipse),
-                    new Point(500, 500)
-                ),
-                Group.Global
-            );
+            Add(new CanvasShape(
+                CloneShape.Clone(PlatonicForms.Ellipse),
+                Group.Global,
+                new Point(750, 700)
+            ));
         }
 
 
-        public void Add(LocalizedShape shape, Group group) {
-            if (!shapes.ContainsKey(group)) shapes.Add(group, new List<LocalizedShape>());
+        public void Add(CanvasObject obj) {
+            // TODO: if selection contains ancestor, add this to selection.
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => {
+                    objects.Add(group, new List<CanvasShape>());
+                },
+                (CanvasShape shape) => {
+                    objects[(Group) shape.parent].Add(shape);
 
-            shapes[group].Add(shape);
+                    Canvas.Children.Add(shape.shape);
+                    Canvas.SetLeft(shape.shape, shape.position.X);
+                    Canvas.SetTop(shape.shape, shape.position.Y);
+                },
+                true
+            );
 
-            Canvas.Children.Add(shape.value);
-            Canvas.SetLeft(shape.value, shape.position.X);
-            Canvas.SetTop(shape.value, shape.position.Y);
+            obj.accept(visitor);
+
 
             this.InvalidateVisual();
             Canvas.InvalidateVisual();
         }
 
 
-        public void Remove(LocalizedShape shape, Group group) {
-            shapes[group].Remove(shape);
-            Canvas.Children.Remove(shape.value);
+        public void Remove(CanvasObject obj) {
+            // TODO: If selection contains this or contains ancestor remove this from selection.
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => {
+                    objects.Remove(group);
+                },
+                (CanvasShape shape) => { 
+                    if (objects.ContainsKey((Group) shape.parent)) { 
+                        objects[(Group) shape.parent].Remove(shape);
+                    }
+
+                    Canvas.Children.Remove(shape.shape);
+                },
+                true
+            );
+
+            obj.accept(visitor);
+
 
             this.InvalidateVisual();
             Canvas.InvalidateVisual();
@@ -81,11 +102,17 @@ namespace ShapePainter {
 
 
         public void Clear(object sender = null, EventArgs e = null) {
-            shapes.Clear();
-
-            foreach (var group in shapes) {
-                foreach (var shape in group.Value) Remove(shape, group.Key);
+            foreach (var pair in objects) {
+                foreach (var shape in pair.Value) {
+                    var visitor = new CanvasObjectGenericVisitor(
+                        (Group g) => { },
+                        (CanvasShape s) => { Canvas.Children.Remove(s.shape); },
+                        false
+                    );
+                }
             }
+
+            objects.Clear();
         }
 
 
@@ -122,9 +149,9 @@ namespace ShapePainter {
         public void Select(Point min, Point max) {
             Deselect();
 
-            List<LocalizedShape> result = new List<LocalizedShape>();
+            List<CanvasObject> result = new List<CanvasObject>();
 
-            foreach (var group in shapes) {
+            foreach (var group in objects) {
                 foreach (var shape in group.Value) {
                     // Select if the center is within the select area.
                     if (
@@ -134,20 +161,20 @@ namespace ShapePainter {
                 }
             }
 
-            selection = new Selection(result);
+            selection = result;
 
             // Make selected elements red.
-            foreach (var shape in result) shape.value.Stroke = Brushes.Red;
+            foreach (var shape in result) ((CanvasShape) shape).shape.Stroke = Brushes.Red;
         }
 
 
         public void Select(Group group) {
             Deselect();
 
-            selection = new Selection(group);
+            selection = new List<CanvasObject> { group };
 
             // Make selected elements red.
-            foreach (var shape in shapes[group]) shape.value.Stroke = Brushes.Red;
+            foreach (var shape in objects[group]) shape.shape.Stroke = Brushes.Red;
         }
 
 
@@ -155,19 +182,24 @@ namespace ShapePainter {
             if (selection == null) return;
 
             // Turn previously selected elements back to being black.
-            foreach (var shape in (selection.contained is Group) ? shapes[selection] : selection) {
-                shape.value.Stroke = Brushes.Black;
+            foreach (var obj in selection) {
+                if (obj is CanvasShape) ((CanvasShape) obj).shape.Stroke = Brushes.Black;
             }
 
             selection = null;
         }
 
 
-        public List<LocalizedShape> GetSelection() {
-            List<LocalizedShape> result = new List<LocalizedShape>();
+        public List<CanvasShape> GetSelection() {
+            List<CanvasShape> result = new List<CanvasShape>();
             if (selection == null) return result;
 
-            result.AddRange((selection.contained is Group) ? shapes[selection] : selection);
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => {},
+                (CanvasShape shape) => { result.Add(shape); },
+                true
+            );
+
             return result;
         }
 
@@ -175,12 +207,13 @@ namespace ShapePainter {
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
             mouseDownPos = args.GetPosition(Canvas);
 
-            selectionRect = new LocalizedShape(
-                Shapes.Shapes.CloneShape(Shapes.Shapes.SelectionRectangle),
+            selectionRect = new CanvasShape(
+                CloneShape.Clone(PlatonicForms.SelectionRectangle),
+                Group.Global,
                 mouseDownPos.Value
             );
 
-            Add(selectionRect, Group.Global);
+            Add(selectionRect);
         }
 
 
@@ -190,7 +223,7 @@ namespace ShapePainter {
             Point mouseUpPos = args.GetPosition(Canvas);
             (Point min, Point max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mouseUpPos);
 
-            Remove(selectionRect, Group.Global);
+            Remove(selectionRect);
 
             Select(min, max);
 
@@ -204,11 +237,11 @@ namespace ShapePainter {
             Point mouseCurrentPos = Mouse.GetPosition(Canvas);
             (Point min, Point max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mouseCurrentPos);
 
-            Canvas.SetLeft(selectionRect.value, min.X);
-            Canvas.SetTop(selectionRect.value, min.Y);
+            Canvas.SetLeft(selectionRect.shape, min.X);
+            Canvas.SetTop(selectionRect.shape, min.Y);
 
-            selectionRect.value.Width  = max.X - min.X;
-            selectionRect.value.Height = max.Y - min.Y;
+            selectionRect.shape.Width  = max.X - min.X;
+            selectionRect.shape.Height = max.Y - min.Y;
         }
     }
 }
