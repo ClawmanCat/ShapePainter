@@ -54,7 +54,21 @@ namespace ShapePainter {
 
 
         public void Add(CanvasObject obj) {
-            // TODO: if selection contains ancestor, add this to selection.
+            // Mark obj as selected if it is in a selected group.
+            foreach (var x in selection ?? new List<CanvasObject>()) {
+                if (obj.ancestor(x)) {
+                    var v = new CanvasObjectGenericVisitor(
+                        (Group group) => { },
+                        (CanvasShape shape) => { shape.shape.Stroke = Brushes.Red; },
+                        true
+                    );
+
+                    obj.accept(v);
+                }
+            }
+
+
+            // Add obj to the canvas.
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => {
                     objects.Add(group, new List<CanvasShape>());
@@ -78,7 +92,10 @@ namespace ShapePainter {
 
 
         public void Remove(CanvasObject obj) {
-            // TODO: If selection contains this or contains ancestor remove this from selection.
+            // Remove from selection if it is selected
+            if (selection != null) selection.Remove(obj);
+
+            // Remove from canvas
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => {
                     objects.Remove(group);
@@ -146,10 +163,11 @@ namespace ShapePainter {
         }
 
 
-        public void Select(Point min, Point max) {
+        public void Select(Point min, Point max, bool overwrite = true) {
             Deselect();
 
             List<CanvasObject> result = new List<CanvasObject>();
+            if (!overwrite) result.AddRange(selection);
 
             foreach (var group in objects) {
                 foreach (var shape in group.Value) {
@@ -168,13 +186,18 @@ namespace ShapePainter {
         }
 
 
-        public void Select(Group group) {
-            Deselect();
-
-            selection = new List<CanvasObject> { group };
+        public void Select(CanvasObject obj, bool overwrite = true) {
+            if (overwrite) Deselect();
+            selection.Add(obj);
 
             // Make selected elements red.
-            foreach (var shape in objects[group]) shape.shape.Stroke = Brushes.Red;
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => { },
+                (CanvasShape shape) => { shape.shape.Stroke = Brushes.Red; },
+                true
+            );
+
+            obj.accept(visitor);
         }
 
 
@@ -207,6 +230,8 @@ namespace ShapePainter {
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
             mouseDownPos = args.GetPosition(Canvas);
 
+            if (selectionRect != null) Remove(selectionRect);
+
             selectionRect = new CanvasShape(
                 CloneShape.Clone(PlatonicForms.SelectionRectangle),
                 Group.Global,
@@ -224,6 +249,7 @@ namespace ShapePainter {
             (Point min, Point max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mouseUpPos);
 
             Remove(selectionRect);
+            selectionRect = null;
 
             Select(min, max);
 
