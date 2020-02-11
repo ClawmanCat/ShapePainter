@@ -1,7 +1,9 @@
-﻿using ShapePainter.Shapes;
+﻿using Newtonsoft.Json;
+using ShapePainter.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,7 +13,7 @@ using System.Windows.Shapes;
 namespace ShapePainter.Shapes {
     public abstract class CanvasObject {
         public Point position { get; set; }
-        public CanvasObject parent { get; set; }
+        [JsonIgnore] [IgnoreDataMember] public CanvasObject parent { get; set; }
 
 
         public CanvasObject(Point position, CanvasObject parent) {

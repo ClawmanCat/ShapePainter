@@ -145,10 +145,10 @@ namespace ShapePainter {
 
                             //System.Diagnostics.Debug.WriteLine(json);
 
-                            string json = JsonConvert.SerializeObject(objects, Formatting.Indented, new JsonSerializerSettings
-                            {
-                                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                            });
+                            //string json = JsonConvert.SerializeObject(objects, Formatting.Indented, new JsonSerializerSettings
+                            //{
+                            //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                            //});
 
                         }
                         catch (JsonSerializationException ex)
