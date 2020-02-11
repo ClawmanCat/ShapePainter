@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using ShapePainter.Shapes;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Path = System.IO.Path;
 
-namespace ShapePainter {
-public partial class MainWindow : Window {
-    private Dictionary<Group, List<Shape>> shapes = new Dictionary<Group, List<Shape>>();
 
+
+namespace ShapePainter
+{
+    public partial class MainWindow : Window {
+    private Dictionary<Group, List<Shape>> shapes = new Dictionary<Group, List<Shape>>();
 
     public MainWindow() {
         InitializeComponent();
@@ -25,10 +28,10 @@ public partial class MainWindow : Window {
 
         shapes[group].Add(shape);
         Canvas.Children.Add(shape);
-    }
+        }
 
 
-    public void Remove(Shape shape, Group group) {
+        public void Remove(Shape shape, Group group) {
         shapes[group].Remove(shape);
         Canvas.Children.Remove(shape);
     }
@@ -47,7 +50,7 @@ public partial class MainWindow : Window {
     private void Save(object sender, EventArgs e)
     {
         SaveFileDialog saveFileDialog = new SaveFileDialog();
-        saveFileDialog.Filter = "JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
+        saveFileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
         if (saveFileDialog.ShowDialog() == true)
         {
             Rect rect = new Rect(Canvas.RenderSize);
@@ -85,14 +88,14 @@ public partial class MainWindow : Window {
                     }
                         break;
                 case ".jpg":
-            JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
-                        jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+                    JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
+                    jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
 
-                        using (FileStream file = File.Create(fileName))
-                        {
-                            jpgEncoder.Save(file);
-                        }
-                        break;
+                    using (FileStream file = File.Create(fileName))
+                    {
+                        jpgEncoder.Save(file);
+                    }
+                    break;
                 case ".png":
                     PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
                         pngEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
@@ -107,13 +110,13 @@ public partial class MainWindow : Window {
             }       
         }
     }
-    public void Open(object sender, EventArgs e)
-    {
+        public void Open(object sender, EventArgs e)
+        {
 
             OpenFileDialog openfileDialog = new OpenFileDialog();
 
             openfileDialog.Title = "Select a file";
-            openfileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png";
+            openfileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
             if (openfileDialog.ShowDialog() == true)
             {
                 var filextension = Path.GetExtension(openfileDialog.FileName);
