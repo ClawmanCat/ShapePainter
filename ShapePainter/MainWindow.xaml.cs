@@ -16,7 +16,6 @@ public partial class MainWindow : Window {
 
     public MainWindow() {
         InitializeComponent();
-
         Add(Shapes.Shapes.CloneShape(Shapes.Shapes.Ellipse), Group.Global);
     }
 
@@ -44,7 +43,6 @@ public partial class MainWindow : Window {
     }
     public void New(object sender, EventArgs e)
     {
-            
     }
     private void Save(object sender, EventArgs e)
     {
@@ -62,9 +60,30 @@ public partial class MainWindow : Window {
             renderTargetBitmap.Render(Canvas);
 
             string fileName = saveFileDialog.FileName;
-            var filextension = Path.GetExtension(saveFileDialog.FileName);
-            switch (filextension.ToLower())
+            var fileExtension = Path.GetExtension(saveFileDialog.FileName);
+            switch (fileExtension.ToLower())
             {
+                 case ".json":
+                    string path = saveFileDialog.FileName;
+                    try
+                    {
+                            File.WriteAllText(path, JsonConvert.SerializeObject(shapes, Formatting.Indented));
+
+                            //string json = JsonConvert.SerializeObject(shapes, Formatting.Indented);
+
+                            //System.Diagnostics.Debug.WriteLine(json);
+
+                            string json = JsonConvert.SerializeObject(shapes, Formatting.Indented, new JsonSerializerSettings
+                            {
+                                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                            });
+
+                        }
+                        catch (JsonSerializationException ex)
+                    {
+                            MessageBox.Show(ex.Message);
+                    }
+                        break;
                 case ".jpg":
             JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
                         jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
@@ -84,7 +103,7 @@ public partial class MainWindow : Window {
                     }
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(filextension);
+                    throw new ArgumentOutOfRangeException(fileExtension);
             }       
         }
     }
@@ -97,8 +116,34 @@ public partial class MainWindow : Window {
             openfileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png";
             if (openfileDialog.ShowDialog() == true)
             {
-                var path = openfileDialog.FileName;
-                Canvas.Background = new ImageBrush(new BitmapImage(new Uri(path)));
+                var filextension = Path.GetExtension(openfileDialog.FileName);
+
+                switch (filextension.ToLower())
+                {
+                    case ".json":
+                        if (openfileDialog.FileName.Trim() != string.Empty)
+                        {
+                            using (StreamReader r = new StreamReader(openfileDialog.FileName))
+                            {
+                                string json = r.ReadToEnd();
+                                Shape shape = JsonConvert.DeserializeObject<Shape>(json);
+
+                                //add to list
+
+                            }
+                        }
+                        break;
+                    case ".jpg":
+                        var jpgPath = openfileDialog.FileName;
+                        Canvas.Background = new ImageBrush(new BitmapImage(new Uri(jpgPath)));
+                        break;
+                    case ".png":
+                        var pngPath = openfileDialog.FileName;
+                        Canvas.Background = new ImageBrush(new BitmapImage(new Uri(pngPath)));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(filextension);
+                }
             }
         }
     public void AddEllipse(object sender, EventArgs e)
