@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ShapePainter.Shapes {
-    public class Group {
-        public static Group Global = new Group();
+    public interface ICanvasObjectVisitor {
+        void visit(Group group);
+        void visit(CanvasShape obj);
+        bool recursive();
     }
 }

@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace ShapePainter.Shapes {
-    public static class Shapes {
+    public static class PlatonicForms {
         public static readonly Shape Ellipse = new Ellipse {
             StrokeThickness = 4,
             Stroke = Brushes.Black,
@@ -40,20 +40,5 @@ namespace ShapePainter.Shapes {
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center
         };
-
-
-        public static Shape CloneShape(Shape shape) {
-            Shape result = (Shape) Activator.CreateInstance(shape.GetType());
-
-            result.StrokeThickness = shape.StrokeThickness;
-            result.Stroke = shape.Stroke;
-            result.Fill = shape.Fill;
-            result.Height = shape.Height;
-            result.Width = shape.Width;
-            result.HorizontalAlignment = shape.HorizontalAlignment;
-            result.VerticalAlignment = shape.VerticalAlignment;
-
-            return result;
-        }
     }
 }
