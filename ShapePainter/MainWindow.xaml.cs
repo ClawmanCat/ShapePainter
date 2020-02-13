@@ -1,9 +1,7 @@
 ﻿using ShapePainter.Shapes;
-using ShapePainter.Utility;
 using ShapePainter.Utility.Command;
 using Microsoft.Win32;
 using Newtonsoft.Json;
-using ShapePainter.Shapes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +12,8 @@ using System.Windows.Shapes;
 using Path = System.IO.Path;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace ShapePainter
 {
@@ -26,7 +26,7 @@ namespace ShapePainter
         private CanvasShape selectionRect = null;
 
         private List<ICanvasCommand> history = new List<ICanvasCommand>();
-
+        private Shape shape;
 
         public MainWindow()
         {
@@ -129,6 +129,42 @@ namespace ShapePainter
         public void New(object sender, EventArgs e)
         {
         }
+        public struct SerializableShapeProperties
+        {
+            public string shapename, classname;
+            public double w, h;
+
+            public SerializableShapeProperties(Shape shape)
+            {
+                this.shapename = shape.GetType().Assembly.GetName().Name;
+                this.classname = shape.GetType().Name;
+
+                    this.w = shape.Width;
+                    this.h = shape.Height;
+            }
+        }
+
+        public SerializableShapeProperties SerializedShape
+        {
+            get
+            {
+                return new SerializableShapeProperties(shape);
+            }
+            set
+            {
+                foreach (var pair in objects)
+                {
+
+                    var type = Assembly.Load(value.shapename).GetType(value.classname);
+                    shape = (Shape)Activator.CreateInstance(type);
+
+                    shape.Width = value.w;
+                    shape.Height = value.h;
+
+                    Debug.WriteLine(pair);
+                }
+            }
+        }
         private void Save(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -152,7 +188,8 @@ namespace ShapePainter
                         string path = saveFileDialog.FileName;
                         try
                         {
-                            File.WriteAllText(path, JsonConvert.SerializeObject(objects, Formatting.Indented));
+                            //File.WriteAllText(path, JsonConvert.SerializeObject(objects, Formatting.Indented));
+                            File.WriteAllText(path, JsonConvert.SerializeObject(SerializedShape, Formatting.Indented));
 
                         }
                         catch (JsonSerializationException ex)
