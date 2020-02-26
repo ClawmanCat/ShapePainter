@@ -60,8 +60,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Jsonable.cs" />
     <Compile Include="Shapes\Canvas\CanvasShape.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectGenericVisitor.cs" />
+    <Compile Include="Shapes\Canvas\Visitors\CanvasObjectPrintVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\ICanvasObjectVisitor.cs" />
     <Compile Include="Shapes\CloneShape.cs" />
     <Compile Include="Shapes\Canvas\Group.cs" />

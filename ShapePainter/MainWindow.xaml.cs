@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Reflection;
 using System.Diagnostics;
+using ShapePainter.Shapes.Canvas.Visitors;
 
 namespace ShapePainter
 {
@@ -66,6 +67,7 @@ namespace ShapePainter
                 (CanvasShape shape) =>
                 {
                     objects[(Group)shape.parent].Add(shape);
+                    ((Group)shape.parent).add(shape);
 
                     Canvas.Children.Add(shape.shape);
                     Canvas.SetLeft(shape.shape, shape.position.X);
@@ -162,11 +164,19 @@ namespace ShapePainter
                     shape.Height = value.h;
 
                     Debug.WriteLine(pair);
+
+                    //elk shape in tojson (functie)
+                    //interface json met tojson
+                    //beter voor visitor
+                    //struct eruit
+
                 }
             }
         }
         private void Save(object sender, EventArgs e)
         {
+            
+
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
             if (saveFileDialog.ShowDialog() == true)
@@ -186,16 +196,9 @@ namespace ShapePainter
                 {
                     case ".json":
                         string path = saveFileDialog.FileName;
-                        try
-                        {
-                            //File.WriteAllText(path, JsonConvert.SerializeObject(objects, Formatting.Indented));
-                            File.WriteAllText(path, JsonConvert.SerializeObject(SerializedShape, Formatting.Indented));
-
-                        }
-                        catch (JsonSerializationException ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
+                        CanvasObjectPrintVisitor v = new CanvasObjectPrintVisitor();
+                        Group.Global.accept(v);
+                        String textToPrint = v.getJSON();
                         break;
                     case ".jpg":
                         JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
