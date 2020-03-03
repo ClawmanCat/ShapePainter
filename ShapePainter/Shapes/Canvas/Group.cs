@@ -7,12 +7,12 @@ using System.Windows;
 
 namespace ShapePainter.Shapes {
     public class Group : CanvasObject {
-        public static Group Global = new Group(new Point(0, 0), null);
+        public static Group Global = new Group(new Vector(0, 0), null);
 
         private List<CanvasObject> contents = new List<CanvasObject>();
+        public IReadOnlyList<CanvasObject> Contents { get { return contents; } }
 
-
-        public Group(Point position, CanvasObject parent) : base(position, parent) {}
+        public Group(Vector position, CanvasObject parent) : base(position, parent) {}
 
         public void add(CanvasObject obj) {
             contents.Add(obj);
@@ -31,6 +31,15 @@ namespace ShapePainter.Shapes {
 
             if (visitor.recursive()) {
                 foreach (CanvasObject obj in contents) obj.accept(visitor);
+            }
+        }
+
+        public override void onPositionChanged(Vector oldPos, Vector newPos) {
+            Vector delta = newPos - oldPos;
+
+            foreach (CanvasObject obj in contents) {
+                obj.position += delta;
+                ((MainWindow) App.Current.MainWindow).InvalidateObject(obj);
             }
         }
     }

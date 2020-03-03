@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -56,13 +59,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Shapes\Canvas\CanvasShape.cs" />
+    <Compile Include="Shapes\Canvas\Commands\AddRemoveCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\ClearCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\CompoundCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\GenericCanvasCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\ICanvasCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\MoveCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\SelectCommand.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectGenericVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\ICanvasObjectVisitor.cs" />
     <Compile Include="Shapes\CloneShape.cs" />
     <Compile Include="Shapes\Canvas\Group.cs" />
     <Compile Include="Shapes\Canvas\CanvasObject.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />
-    <Compile Include="Utility\Command\ICanvasCommand.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Utility\Variant.cs" />
     <Page Include="MainWindow.xaml">
@@ -96,6 +105,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
