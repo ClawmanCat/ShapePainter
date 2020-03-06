@@ -175,8 +175,6 @@ namespace ShapePainter
         }
         private void Save(object sender, EventArgs e)
         {
-            
-
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
             if (saveFileDialog.ShowDialog() == true)
@@ -195,32 +193,49 @@ namespace ShapePainter
                 switch (fileExtension.ToLower())
                 {
                     case ".json":
-                        string path = saveFileDialog.FileName;
-                        CanvasObjectPrintVisitor v = new CanvasObjectPrintVisitor();
-                        Group.Global.accept(v);
-                        String textToPrint = v.getJSON();
+                        SaveToJSON(renderTargetBitmap, fileName);
                         break;
                     case ".jpg":
-                        JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
-                        jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-
-                        using (FileStream file = File.Create(fileName))
-                        {
-                            jpgEncoder.Save(file);
-                        }
+                        SaveToJPG(renderTargetBitmap, fileName);
                         break;
-                    case ".png":
-                        PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
-                        pngEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-
-                        using (FileStream file = File.Create(fileName))
-                        {
-                            pngEncoder.Save(file);
-                        }
+                    case ".png":  
+                        SaveToPNG(renderTargetBitmap, fileName);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(fileExtension);
                 }
+            }
+        }
+        public void SaveToJSON(RenderTargetBitmap renderTargetBitmap, string fileName)
+        {
+            CanvasObjectPrintVisitor v = new CanvasObjectPrintVisitor();
+            Group.Global.accept(v);
+            String textToPrint = v.getJSON();
+
+            //save to location
+            //if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            //{
+                File.WriteAllText(fileName, textToPrint);
+            //}
+        }
+        public void SaveToJPG(RenderTargetBitmap renderTargetBitmap, string fileName)
+        {
+            JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
+            jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+            using (FileStream file = File.Create(fileName))
+            {
+                jpgEncoder.Save(file);
+            }
+        }
+        public void SaveToPNG(RenderTargetBitmap renderTargetBitmap, string fileName)
+        {
+            PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
+            pngEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+            using (FileStream file = File.Create(fileName))
+            {
+                pngEncoder.Save(file);
             }
         }
         public void Open(object sender, EventArgs e)
