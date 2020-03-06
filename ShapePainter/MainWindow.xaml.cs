@@ -212,11 +212,7 @@ namespace ShapePainter
             Group.Global.accept(v);
             String textToPrint = v.getJSON();
 
-            //save to location
-            //if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            //{
-                File.WriteAllText(fileName, textToPrint);
-            //}
+            File.WriteAllText(fileName, textToPrint);
         }
         public void SaveToJPG(RenderTargetBitmap renderTargetBitmap, string fileName)
         {
