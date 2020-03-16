@@ -131,48 +131,48 @@ namespace ShapePainter
         public void New(object sender, EventArgs e)
         {
         }
-        public struct SerializableShapeProperties
-        {
-            public string shapename, classname;
-            public double w, h;
+        //public struct SerializableShapeProperties
+        //{
+        //    public string shapename, classname;
+        //    public double w, h;
 
-            public SerializableShapeProperties(Shape shape)
-            {
-                this.shapename = shape.GetType().Assembly.GetName().Name;
-                this.classname = shape.GetType().Name;
+        //    public SerializableShapeProperties(Shape shape)
+        //    {
+        //        this.shapename = shape.GetType().Assembly.GetName().Name;
+        //        this.classname = shape.GetType().Name;
 
-                    this.w = shape.Width;
-                    this.h = shape.Height;
-            }
-        }
+        //            this.w = shape.Width;
+        //            this.h = shape.Height;
+        //    }
+        //}
 
-        public SerializableShapeProperties SerializedShape
-        {
-            get
-            {
-                return new SerializableShapeProperties(shape);
-            }
-            set
-            {
-                foreach (var pair in objects)
-                {
+        //public SerializableShapeProperties SerializedShape
+        //{
+        //    get
+        //    {
+        //        return new SerializableShapeProperties(shape);
+        //    }
+        //    set
+        //    {
+        //        foreach (var pair in objects)
+        //        {
 
-                    var type = Assembly.Load(value.shapename).GetType(value.classname);
-                    shape = (Shape)Activator.CreateInstance(type);
+        //            var type = Assembly.Load(value.shapename).GetType(value.classname);
+        //            shape = (Shape)Activator.CreateInstance(type);
 
-                    shape.Width = value.w;
-                    shape.Height = value.h;
+        //            shape.Width = value.w;
+        //            shape.Height = value.h;
 
-                    Debug.WriteLine(pair);
+        //            Debug.WriteLine(pair);
 
-                    //elk shape in tojson (functie)
-                    //interface json met tojson
-                    //beter voor visitor
-                    //struct eruit
+        //            //elk shape in tojson (functie)
+        //            //interface json met tojson
+        //            //beter voor visitor
+        //            //struct eruit
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
         private void Save(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();

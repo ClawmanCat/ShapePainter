@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShapePainter.Shapes.Canvas.Visitors
 {
@@ -17,16 +13,18 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
         public void visit(Group group)
         {
-            printedText += "{\"id\":naam,\"elements\": [";
+            printedText += "{\"Group\"[{";
 
             foreach (CanvasObject obj in group.view()) obj.accept(this);
 
-            printedText += "]}";
+            printedText += "}]";
         }
 
         public void visit(CanvasShape obj)
         {
-            printedText += "{\"id:\"shape\"}";
+            //if die checkt of het ornament of shape is
+
+            printedText += "\"shape\":/" obj.position.X; \"positiony\" \"width\" \"height\",";
         }
 
         public String getJSON()
