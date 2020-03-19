@@ -17,14 +17,15 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
             foreach (CanvasObject obj in group.view()) obj.accept(this);
 
-            printedText += "}]";
+            printedText += "\n}]";
         }
 
         public void visit(CanvasShape obj)
         {
             //if die checkt of het ornament of shape is
+            string posx = obj.position.X.ToString();
 
-            printedText += "\"shape\":/" obj.position.X; \"positiony\" \"width\" \"height\",";
+            printedText += "\n\"shape\": posx; \"positiony\" \"width\" \"height\",";
         }
 
         public String getJSON()
