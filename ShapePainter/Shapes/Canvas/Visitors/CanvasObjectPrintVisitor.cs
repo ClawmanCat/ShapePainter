@@ -23,9 +23,15 @@ namespace ShapePainter.Shapes.Canvas.Visitors
         public void visit(CanvasShape obj)
         {
             //if die checkt of het ornament of shape is
-            string posx = obj.position.X.ToString();
+            //string shapeWidth = obj.Width.ToString();
+            //string shapeHeight = obj.Height.ToString();
+            string shapeString = "\n\"shape\":";
+            string shapePosX = obj.position.X.ToString();
+            string shapePosY = obj.position.Y.ToString();
+            string endComma = ",";
 
-            printedText += "\n\"shape\": posx; \"positiony\" \"width\" \"height\",";
+            //printedText += "\n\"shape\": posx; \"positiony\" \"width\" \"height\",";
+            printedText += shapeString + " " + shapePosX + " " + shapePosY + endComma;
         }
 
         public String getJSON()
