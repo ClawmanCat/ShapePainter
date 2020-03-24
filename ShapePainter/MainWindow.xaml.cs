@@ -29,7 +29,6 @@ namespace ShapePainter
         private CanvasShape selectionRect = null;
 
         private List<ICanvasCommand> history = new List<ICanvasCommand>();
-        private Shape shape;
 
         public MainWindow()
         {
@@ -221,6 +220,19 @@ namespace ShapePainter
                 }
             }
         }
+        public static long CountLinesJSON(StreamReader r, string f)
+        {
+            long count = 0;
+            using (r = new StreamReader(f))
+            {
+                string line;
+                while ((line = r.ReadLine()) != null)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
         public void OpenJSON(OpenFileDialog openfileDialog)
         {
             if (openfileDialog.FileName.Trim() != string.Empty)
@@ -228,22 +240,43 @@ namespace ShapePainter
                 using (StreamReader r = new StreamReader(openfileDialog.FileName))
                 {
                     string json = r.ReadToEnd();
-                    var shape = json.Split('[')[1];
+                    var searchShape = json.Split('[')[1];
 
-                    var firstshape = shape.Split(',')[0];
-                    string[] shapeOne = firstshape.Split(' ');
-                    double posx = Convert.ToDouble(shapeOne[1]);
-                    double posy = Convert.ToDouble(shapeOne[2]);
+                    var foundShape = searchShape.Split(',')[1];
+                    string[] shapeSplit = foundShape.Split(' ');/*gives ellipse shape string*/
+                    double posx = Convert.ToDouble(shapeSplit[1]);/*gives posx of ellipse*/
+                    double posy = Convert.ToDouble(shapeSplit[2]);
+
                     MessageBox.Show("x = " + posx);
                     MessageBox.Show("y = " + posy);
-                    if (shapeOne[0].Contains("Ellipse"))
-                    {
-                       Add(new CanvasShape(
-                       CloneShape.Clone(PlatonicForms.Ellipse),
-                       Group.Global,
-                       new Point(posx, posy)
-                    ));
 
+                    long fileLength = CountLinesJSON(r, openfileDialog.FileName);
+                    //while?
+                    for (int index = 0; index < fileLength -1; index++) {
+                        if (shapeSplit[index].Contains("Ellipse"))
+                        {
+                            string[] shapeThing = foundShape.Split(' ');
+                            double x = Convert.ToDouble(shapeThing[index + 1]);
+                            double y = Convert.ToDouble(shapeThing[index + 1]);
+
+                            Add(new CanvasShape(
+                            CloneShape.Clone(PlatonicForms.Ellipse),
+                            Group.Global,
+                            new Point(x, y)
+                         ));
+                        }
+                        else if (shapeSplit[index].Contains("Rectangle"))
+                        {
+                            string[] shapeThing = foundShape.Split(' ');
+                            double x = Convert.ToDouble(shapeThing[index + 1]);
+                            double y = Convert.ToDouble(shapeThing[index + 1]);
+
+                            Add(new CanvasShape(
+                            CloneShape.Clone(PlatonicForms.Rectangle),
+                            Group.Global,
+                            new Point(x, y)
+                         ));
+                        }
                     }
 
 
