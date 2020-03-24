@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 
 namespace ShapePainter.Shapes.Canvas.Visitors
 {
@@ -14,7 +13,11 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
         public void visit(Group group)
         {
-            printedText += "{\"Group\"[{";
+         //string objGroup = group.ToString();
+            string objGroup = "Group";
+
+            //printedText += "{\"Group\"[{";
+            printedText += "{\n" + objGroup + ":" + "[";
 
             foreach (CanvasObject obj in group.view()) obj.accept(this);
 
@@ -25,7 +28,7 @@ namespace ShapePainter.Shapes.Canvas.Visitors
         {
            
             string shape = obj.shape.ToString();
-            string trimmedShape = "\n" + shape.Replace("System.Windows.Shapes.", "") + ":";
+            string trimmedShape = "\n" + "'" + shape.Replace("System.Windows.Shapes.", "") + "'" + ":";
 
             string shapePosX = obj.position.X.ToString();
             string shapePosY = obj.position.Y.ToString(); 

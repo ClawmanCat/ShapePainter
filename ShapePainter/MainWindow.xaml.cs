@@ -15,6 +15,8 @@ using System.Windows.Input;
 using System.Reflection;
 using System.Diagnostics;
 using ShapePainter.Shapes.Canvas.Visitors;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace ShapePainter
 {
@@ -35,24 +37,24 @@ namespace ShapePainter
 
             Add(Group.Global);
 
-            // Test shapes
-            Add(new CanvasShape(
-                CloneShape.Clone(PlatonicForms.Ellipse),
-                Group.Global,
-                new Point(30, 30)
-            ));
+            //// Test shapes
+            //Add(new CanvasShape(
+            //    CloneShape.Clone(PlatonicForms.Ellipse),
+            //    Group.Global,
+            //    new Point(30, 30)
+            //));
 
-            Add(new CanvasShape(
-                CloneShape.Clone(PlatonicForms.Rectangle),
-                Group.Global,
-                new Point(500, 300)
-            ));
+            //Add(new CanvasShape(
+            //    CloneShape.Clone(PlatonicForms.Rectangle),
+            //    Group.Global,
+            //    new Point(500, 300)
+            //));
 
-            Add(new CanvasShape(
-                CloneShape.Clone(PlatonicForms.Ellipse),
-                Group.Global,
-                new Point(750, 700)
-            ));
+            //Add(new CanvasShape(
+            //    CloneShape.Clone(PlatonicForms.Ellipse),
+            //    Group.Global,
+            //    new Point(750, 700)
+            //));
         }
 
 
@@ -131,48 +133,6 @@ namespace ShapePainter
         public void New(object sender, EventArgs e)
         {
         }
-        //public struct SerializableShapeProperties
-        //{
-        //    public string shapename, classname;
-        //    public double w, h;
-
-        //    public SerializableShapeProperties(Shape shape)
-        //    {
-        //        this.shapename = shape.GetType().Assembly.GetName().Name;
-        //        this.classname = shape.GetType().Name;
-
-        //            this.w = shape.Width;
-        //            this.h = shape.Height;
-        //    }
-        //}
-
-        //public SerializableShapeProperties SerializedShape
-        //{
-        //    get
-        //    {
-        //        return new SerializableShapeProperties(shape);
-        //    }
-        //    set
-        //    {
-        //        foreach (var pair in objects)
-        //        {
-
-        //            var type = Assembly.Load(value.shapename).GetType(value.classname);
-        //            shape = (Shape)Activator.CreateInstance(type);
-
-        //            shape.Width = value.w;
-        //            shape.Height = value.h;
-
-        //            Debug.WriteLine(pair);
-
-        //            //elk shape in tojson (functie)
-        //            //interface json met tojson
-        //            //beter voor visitor
-        //            //struct eruit
-
-        //        }
-        //    }
-        //}
         private void Save(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -248,30 +208,59 @@ namespace ShapePainter
                 switch (filextension.ToLower())
                 {
                     case ".json":
-                        if (openfileDialog.FileName.Trim() != string.Empty)
-                        {
-                            using (StreamReader r = new StreamReader(openfileDialog.FileName))
-                            {
-                                string json = r.ReadToEnd();
-                                Shape shape = JsonConvert.DeserializeObject<Shape>(json);
-
-                                //add to list
-
-                            }
-                        }
+                        OpenJSON(openfileDialog);
                         break;
                     case ".jpg":
-                        var jpgPath = openfileDialog.FileName;
-                        Canvas.Background = new ImageBrush(new BitmapImage(new Uri(jpgPath)));
+                        OpenJPG(openfileDialog);
                         break;
                     case ".png":
-                        var pngPath = openfileDialog.FileName;
-                        Canvas.Background = new ImageBrush(new BitmapImage(new Uri(pngPath)));
+                        OpenPNG(openfileDialog);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(filextension);
                 }
             }
+        }
+        public void OpenJSON(OpenFileDialog openfileDialog)
+        {
+            if (openfileDialog.FileName.Trim() != string.Empty)
+            {
+                using (StreamReader r = new StreamReader(openfileDialog.FileName))
+                {
+                    string json = r.ReadToEnd();
+                    var shape = json.Split('[')[1];
+
+                    var firstshape = shape.Split(',')[0];
+                    string[] shapeOne = firstshape.Split(' ');
+                    double posx = Convert.ToDouble(shapeOne[1]);
+                    double posy = Convert.ToDouble(shapeOne[2]);
+                    MessageBox.Show("x = " + posx);
+                    MessageBox.Show("y = " + posy);
+                    if (shapeOne[0].Contains("Ellipse"))
+                    {
+                       Add(new CanvasShape(
+                       CloneShape.Clone(PlatonicForms.Ellipse),
+                       Group.Global,
+                       new Point(posx, posy)
+                    ));
+
+                    }
+
+
+                    //add to list / canvas
+
+                }
+            }
+        }
+        public void OpenPNG(OpenFileDialog openfileDialog)
+        {
+            var pngPath = openfileDialog.FileName;
+            Canvas.Background = new ImageBrush(new BitmapImage(new Uri(pngPath)));
+        }
+        public void OpenJPG(OpenFileDialog openfileDialog)
+        {
+            var jpgPath = openfileDialog.FileName;
+            Canvas.Background = new ImageBrush(new BitmapImage(new Uri(jpgPath)));
         }
         public void Select(Point min, Point max)
         {
