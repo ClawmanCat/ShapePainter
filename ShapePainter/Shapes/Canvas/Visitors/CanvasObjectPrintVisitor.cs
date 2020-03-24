@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 
 namespace ShapePainter.Shapes.Canvas.Visitors
 {
@@ -22,16 +23,27 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
         public void visit(CanvasShape obj)
         {
-            //if die checkt of het ornament of shape is
-            //string shapeWidth = obj.Width.ToString();
-            //string shapeHeight = obj.Height.ToString();
-            string shapeString = "\n\"shape\":";
+           
+            string shape = obj.shape.ToString();
+            string trimmedShape = "\n" + shape.Replace("System.Windows.Shapes.", "") + ":";
+
             string shapePosX = obj.position.X.ToString();
-            string shapePosY = obj.position.Y.ToString();
+            string shapePosY = obj.position.Y.ToString(); 
+            string shapeWidth = obj.shape.Width.ToString();
+            string shapeHeight = obj.shape.Height.ToString();
             string endComma = ",";
 
-            //printedText += "\n\"shape\": posx; \"positiony\" \"width\" \"height\",";
-            printedText += shapeString + " " + shapePosX + " " + shapePosY + endComma;
+            //if else die checkt of het ornament of shape is
+            if (trimmedShape.Contains("Rectangle") || trimmedShape.Contains("Ellipse"))
+            {
+                printedText += trimmedShape + " " + shapePosX + " " + shapePosY + " " + shapeWidth + " " + shapeHeight + endComma;
+            }
+            else if (trimmedShape == "ornament")
+            {
+                string text = "ornament tekst";
+                printedText += shapePosX + " " + text + endComma;
+            }
+
         }
 
         public String getJSON()
