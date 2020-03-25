@@ -240,43 +240,38 @@ namespace ShapePainter
                 using (StreamReader r = new StreamReader(openfileDialog.FileName))
                 {
                     string json = r.ReadToEnd();
-                    var searchShape = json.Split('[')[1];
+                    //var searchShape = json.Split('[')[1];
 
-                    var foundShape = searchShape.Split(',')[1];
-                    string[] shapeSplit = foundShape.Split(' ');/*gives ellipse shape string*/
-                    double posx = Convert.ToDouble(shapeSplit[1]);/*gives posx of ellipse*/
-                    double posy = Convert.ToDouble(shapeSplit[2]);
+                    //var foundShape = searchShape.Split(',')[0];
+                    //string[] shapeSplit = foundShape.Split(' ');/*gives ellipse shape string*/
+                    //double posx = Convert.ToDouble(shapeSplit[1]);/*gives posx of ellipse*/
+                    //double posy = Convert.ToDouble(shapeSplit[2]);
 
-                    MessageBox.Show("x = " + posx);
-                    MessageBox.Show("y = " + posy);
+                    //MessageBox.Show("x = " + posx);
+                    //MessageBox.Show("y = " + posy);
 
                     long fileLength = CountLinesJSON(r, openfileDialog.FileName);
                     //while?
-                    for (int index = 0; index < fileLength -1; index++) {
-                        if (shapeSplit[index].Contains("Ellipse"))
-                        {
+                    for (int index = 1; index < fileLength -2; index++) {
+                        int count =  1;
+                        count += 1;
+                        var searchShape = json.Split('[')[count -1];
+
+                        var foundShape = searchShape.Split(',')[count];
+                        string[] shapeSplit = foundShape.Split(' ');/*gives ellipse shape string*/
+
+                        string shapename = shapeSplit[index - 1].Replace("':", "");
+                            MessageBox.Show(shapename);
+
                             string[] shapeThing = foundShape.Split(' ');
-                            double x = Convert.ToDouble(shapeThing[index + 1]);
-                            double y = Convert.ToDouble(shapeThing[index + 1]);
+                            double x = Convert.ToDouble(shapeThing[index]);
+                            double y = Convert.ToDouble(shapeThing[index]);
 
                             Add(new CanvasShape(
                             CloneShape.Clone(PlatonicForms.Ellipse),
                             Group.Global,
                             new Point(x, y)
                          ));
-                        }
-                        else if (shapeSplit[index].Contains("Rectangle"))
-                        {
-                            string[] shapeThing = foundShape.Split(' ');
-                            double x = Convert.ToDouble(shapeThing[index + 1]);
-                            double y = Convert.ToDouble(shapeThing[index + 1]);
-
-                            Add(new CanvasShape(
-                            CloneShape.Clone(PlatonicForms.Rectangle),
-                            Group.Global,
-                            new Point(x, y)
-                         ));
-                        }
                     }
 
 
