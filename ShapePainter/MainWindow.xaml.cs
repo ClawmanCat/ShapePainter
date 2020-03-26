@@ -257,12 +257,22 @@ namespace ShapePainter
                         string shapename = rgx.Replace(shapeThing[0], replacement);
 
                         MessageBox.Show(shapename);
-
-                        Add(new CanvasShape(
-                            CloneShape.Clone(PlatonicForms.Ellipse),
-                            Group.Global,
-                            new Point(x, y)
-                        ));
+                        if (shapename.Contains("Ellipse"))
+                        {
+                            Add(new CanvasShape(
+                                CloneShape.Clone(PlatonicForms.Ellipse),
+                                Group.Global,
+                                new Point(x, y)
+                            ));
+                        }
+                        else if(shapename.Contains("Rectangle"))
+                        {
+                            Add(new CanvasShape(
+                               CloneShape.Clone(PlatonicForms.Rectangle),
+                               Group.Global,
+                               new Point(x, y)
+                           ));
+                        }
                     }
 
 
