@@ -41,7 +41,7 @@ namespace ShapePainter.Shapes.Canvas.Visitors
             {
                 printedText += trimmedShape + " " + shapePosX + " " + shapePosY + " " + shapeWidth + " " + shapeHeight + endComma;
             }
-            else if (trimmedShape == "ornament")
+            else if (trimmedShape .Contains("ornament"))
             {
                 string text = "ornament tekst";
                 printedText += shapePosX + " " + text + endComma;

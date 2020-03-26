@@ -29,25 +29,6 @@ namespace ShapePainter
             InitializeComponent();
 
             Add(Group.Global);
-
-            //// Test shapes
-            //Add(new CanvasShape(
-            //    CloneShape.Clone(PlatonicForms.Ellipse),
-            //    Group.Global,
-            //    new Point(30, 30)
-            //));
-
-            //Add(new CanvasShape(
-            //    CloneShape.Clone(PlatonicForms.Rectangle),
-            //    Group.Global,
-            //    new Point(500, 300)
-            //));
-
-            //Add(new CanvasShape(
-            //    CloneShape.Clone(PlatonicForms.Ellipse),
-            //    Group.Global,
-            //    new Point(750, 700)
-            //));
         }
 
 
@@ -246,17 +227,12 @@ namespace ShapePainter
 
                         int x = Convert.ToInt32(shapeThing[1]);
                         int y = Convert.ToInt32(shapeThing[2]);
-                        //MessageBox.Show("x = " + x);
-                        //MessageBox.Show("y = " + y);
-
-                        //TO DO: name van shape uit file halen en die achter platonicforms plakken
 
                         string pattern = "[':]";
                         string replacement = "";
                         System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex(pattern);
                         string shapename = rgx.Replace(shapeThing[0], replacement);
 
-                        MessageBox.Show(shapename);
                         if (shapename.Contains("Ellipse"))
                         {
                             Add(new CanvasShape(
@@ -274,10 +250,6 @@ namespace ShapePainter
                            ));
                         }
                     }
-
-
-                    //add to list / canvas
-
                 }
             }
         }
