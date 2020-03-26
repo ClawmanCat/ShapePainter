@@ -1,22 +1,16 @@
 ﻿using ShapePainter.Shapes;
 using ShapePainter.Utility.Command;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Path = System.IO.Path;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Reflection;
-using System.Diagnostics;
 using ShapePainter.Shapes.Canvas.Visitors;
-using Newtonsoft.Json.Linq;
-using System.Linq;
 
 namespace ShapePainter
 {
@@ -240,38 +234,35 @@ namespace ShapePainter
                 using (StreamReader r = new StreamReader(openfileDialog.FileName))
                 {
                     string json = r.ReadToEnd();
-                    //var searchShape = json.Split('[')[1];
-
-                    //var foundShape = searchShape.Split(',')[0];
-                    //string[] shapeSplit = foundShape.Split(' ');/*gives ellipse shape string*/
-                    //double posx = Convert.ToDouble(shapeSplit[1]);/*gives posx of ellipse*/
-                    //double posy = Convert.ToDouble(shapeSplit[2]);
-
-                    //MessageBox.Show("x = " + posx);
-                    //MessageBox.Show("y = " + posy);
 
                     long fileLength = CountLinesJSON(r, openfileDialog.FileName);
                     //while?
-                    for (int index = 1; index < fileLength -2; index++) {
-                        int count =  1;
-                        count += 1;
-                        var searchShape = json.Split('[')[count -1];
+                    for (int index = 0; index < fileLength - 3; index++)
+                    {
 
-                        var foundShape = searchShape.Split(',')[count];
-                        string[] shapeSplit = foundShape.Split(' ');/*gives ellipse shape string*/
+                        var searchShape = json.Split('[')[1];
+                        var foundShape = searchShape.Split(',')[index];
+                        string[] shapeThing = foundShape.Split(' ');/*gives shape string*/
 
-                        string shapename = shapeSplit[index - 1].Replace("':", "");
-                            MessageBox.Show(shapename);
+                        int x = Convert.ToInt32(shapeThing[1]);
+                        int y = Convert.ToInt32(shapeThing[2]);
+                        //MessageBox.Show("x = " + x);
+                        //MessageBox.Show("y = " + y);
 
-                            string[] shapeThing = foundShape.Split(' ');
-                            double x = Convert.ToDouble(shapeThing[index]);
-                            double y = Convert.ToDouble(shapeThing[index]);
+                        //TO DO: name van shape uit file halen en die achter platonicforms plakken
 
-                            Add(new CanvasShape(
+                        string pattern = "[':]";
+                        string replacement = "";
+                        System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex(pattern);
+                        string shapename = rgx.Replace(shapeThing[0], replacement);
+
+                        MessageBox.Show(shapename);
+
+                        Add(new CanvasShape(
                             CloneShape.Clone(PlatonicForms.Ellipse),
                             Group.Global,
                             new Point(x, y)
-                         ));
+                        ));
                     }
 
 
