@@ -41,7 +41,10 @@ namespace ShapePainter
             this.objects = new List<CanvasObject>();
             this.selection = new List<CanvasObject>();
 
-            List<CanvasObject> initial = new List<CanvasObject> {};
+            List<CanvasObject> initial = new List<CanvasObject> {
+            Group.Global,
+                new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(30, 30)),
+            };
 
             RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
         }
