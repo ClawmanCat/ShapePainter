@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 
 namespace ShapePainter.Shapes.Canvas.Visitors
 {
@@ -28,6 +29,7 @@ namespace ShapePainter.Shapes.Canvas.Visitors
         {
            
             string shape = obj.shape.ToString();
+            MessageBox.Show(shape);
             string trimmedShape = "\n" + "'" + shape.Replace("System.Windows.Shapes.", "") + "'" + ":";
 
             string shapePosX = obj.position.X.ToString();
