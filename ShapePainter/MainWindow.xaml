@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShapePainter"
         mc:Ignorable="d"
-        Title="Shape Painter" Height="1020" Width="1280">
+        Title="Shape Painter" Height="1020" Width="1280"
+        PreviewKeyDown="OnKeyDown" 
+        PreviewKeyUp="OnKeyUp"   
+     >
      <Grid>
           <!--<Grid.RowDefinitions>
                <RowDefinition></RowDefinition>
@@ -62,7 +65,7 @@
                                    <TextBlock Margin="3,0,0,0">Save</TextBlock>
                               </StackPanel>
                          </Button>
-                         <Button Click="Clear">
+                         <Button Click="ClearCanvas">
                               <StackPanel Orientation="Horizontal">
                                    <Image 
                                         Source="Icons/Clear.png" 

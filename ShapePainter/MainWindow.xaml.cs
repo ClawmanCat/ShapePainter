@@ -1,5 +1,5 @@
 ﻿using ShapePainter.Shapes;
-using ShapePainter.Utility.Command;
+using ShapePainter.Shapes.Canvas;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -11,41 +11,118 @@ using Path = System.IO.Path;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ShapePainter.Shapes.Canvas.Visitors;
+using System.Linq;
 
 namespace ShapePainter
 {
-    public partial class MainWindow : Window
-    {
-        private Dictionary<Group, List<CanvasShape>> objects = new Dictionary<Group, List<CanvasShape>>();
-        private List<CanvasObject> selection = null;
+    public partial class MainWindow : Window {
+        private enum MouseState { NONE, SELECTING, MOVING }
 
-        private Point? mouseDownPos = null;
-        private CanvasShape selectionRect = null;
+        public List<CanvasObject> objects { get; set; }
+        public List<CanvasObject> selection { get; set; }
 
         private List<ICanvasCommand> history = new List<ICanvasCommand>();
 
-        public MainWindow()
-        {
+        private MouseState mouseState;
+        private Vector? mouseDownPos = null, mousePrevPos = null;
+        private CanvasShape selectionRectangle = null;
+
+        // While we update the screen every time the mouse is moved, we only want to record the begin- and endstates
+        // in the history.
+        // To achieve this we keep a temporary command to record the begin and endstates in.
+        ICanvasCommand recording;
+
+        private Dictionary<Key, bool> keyboard = new Dictionary<Key, bool>();
+
+
+        public MainWindow() {
             InitializeComponent();
 
-            Add(Group.Global);
+            this.objects = new List<CanvasObject>();
+            this.selection = new List<CanvasObject>();
+
+            //List<CanvasObject> initial = new List<CanvasObject> {
+            //    Group.Global,
+            //    new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(30, 30)),
+            //    new CanvasShape(CloneShape.Clone(PlatonicForms.Rectangle), Group.Global, new Vector(500, 300)),
+            //    new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(750, 700))
+            //};
+
+            //RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
         }
 
 
-        public void Add(CanvasObject obj)
-        {
-            // TODO: if selection contains ancestor, add this to selection.
-            var visitor = new CanvasObjectGenericVisitor(
-                (Group group) =>
-                {
-                    objects.Add(group, new List<CanvasShape>());
-                },
-                (CanvasShape shape) =>
-                {
-                    objects[(Group)shape.parent].Add(shape);
-                    ((Group)shape.parent).add(shape);
+        public void RunCommand(ICanvasCommand command) {
+            command.doCommand(this);
+            history.Add(command);
+        }
 
+
+        public bool IsKeyDown(Key k) {
+            return keyboard.ContainsKey(k) && keyboard[k];
+        }
+
+
+        private void SetKeyDown(Key k, bool down) {
+            keyboard[k] = down;
+        }
+
+
+        public void AddObject(CanvasObject obj) {
+            this.objects.Add(obj);
+
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => { },
+                (CanvasShape shape) => {
                     Canvas.Children.Add(shape.shape);
+                    InvalidateObject(shape);
+                },
+                true
+            );
+
+            obj.accept(visitor);
+            Invalidate();
+        }
+
+
+        public void RemoveObject(CanvasObject obj) {
+            this.objects.Remove(obj);
+            this.selection.Remove(obj);
+
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => { },
+                (CanvasShape shape) => {
+                    Canvas.Children.Remove(shape.shape);
+                },
+                true
+            );
+
+            obj.accept(visitor);
+            Invalidate();
+        }
+
+
+
+
+        public List<CanvasObject> GetSelectedObjects() {
+            List<CanvasObject> result = new List<CanvasObject>();
+
+            foreach (CanvasObject o in objects) {
+                if (selection.Any((CanvasObject s) => o.ancestor(s, true))) result.Add(o);
+            }
+
+            return result;
+        }
+        private void Invalidate()
+        {
+            this.InvalidateVisual();
+        }
+
+        public void InvalidateObject(CanvasObject obj)
+        {
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => { },
+                (CanvasShape shape) => {
                     Canvas.SetLeft(shape.shape, shape.position.X);
                     Canvas.SetTop(shape.shape, shape.position.Y);
                 },
@@ -53,57 +130,45 @@ namespace ShapePainter
             );
 
             obj.accept(visitor);
+            Invalidate();
+        }
+        public void SelectRegion(Vector a, Vector b, bool overwrite = true)
+        {
+            List<CanvasObject> result = new List<CanvasObject>();
 
+            Vector min = new Vector(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y));
+            Vector max = new Vector(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y));
 
-            this.InvalidateVisual();
-            Canvas.InvalidateVisual();
+            foreach (CanvasObject o in objects)
+            {
+                if (
+                    o.position.X >= min.X && o.position.X < max.X &&
+                    o.position.Y >= min.Y && o.position.Y < max.Y
+                ) result.Add(o);
+            }
+
+            SelectObjects(result, overwrite);
         }
 
 
-        public void Remove(CanvasObject obj)
+        #region Selection
+        public void SelectObjects(IEnumerable<CanvasObject> objects, bool overwrite = true)
         {
-            // TODO: If selection contains this or contains ancestor remove this from selection.
-            var visitor = new CanvasObjectGenericVisitor(
-                (Group group) =>
-                {
-                    objects.Remove(group);
-                },
-                (CanvasShape shape) =>
-                {
-                    if (objects.ContainsKey((Group)shape.parent))
-                    {
-                        objects[(Group)shape.parent].Remove(shape);
-                    }
+            selection.Remove(selectionRectangle);   // Can't select the selection rectangle.
 
-                    Canvas.Children.Remove(shape.shape);
-                },
+            if (overwrite) ClearSelection();
+
+            var visitor = new CanvasObjectGenericVisitor(
+                (Group group) => { },
+                (CanvasShape shape) => { shape.selected = true; },
                 true
             );
 
-            obj.accept(visitor);
+            foreach (CanvasObject o in objects) o.accept(visitor);
 
-
-            this.InvalidateVisual();
-            Canvas.InvalidateVisual();
+            selection.AddRange(objects);
         }
 
-
-        public void Clear(object sender = null, EventArgs e = null)
-        {
-            foreach (var pair in objects)
-            {
-                foreach (var shape in pair.Value)
-                {
-                    var visitor = new CanvasObjectGenericVisitor(
-                        (Group g) => { },
-                        (CanvasShape s) => { Canvas.Children.Remove(s.shape); },
-                        false
-                    );
-                }
-            }
-
-            objects.Clear();
-        }
         public void New(object sender, EventArgs e)
         {
         }
@@ -235,18 +300,20 @@ namespace ShapePainter
 
                         if (shapename.Contains("Ellipse"))
                         {
-                            Add(new CanvasShape(
+                            AddObject(new CanvasShape(
                                 CloneShape.Clone(PlatonicForms.Ellipse),
                                 Group.Global,
-                                new Point(x, y)
+                                new Vector(x, y)
+                            //new Point(x, y)
                             ));
                         }
                         else if(shapename.Contains("Rectangle"))
                         {
-                            Add(new CanvasShape(
+                            AddObject(new CanvasShape(
                                CloneShape.Clone(PlatonicForms.Rectangle),
                                Group.Global,
-                               new Point(x, y)
+                               new Vector(x,y)
+                               //new Point(x, y)
                            ));
                         }
                     }
@@ -263,123 +330,126 @@ namespace ShapePainter
             var jpgPath = openfileDialog.FileName;
             Canvas.Background = new ImageBrush(new BitmapImage(new Uri(jpgPath)));
         }
-        public void Select(Point min, Point max)
-        {
-            Deselect();
-
-            List<CanvasObject> result = new List<CanvasObject>();
-
-            foreach (var group in objects)
-            {
-                foreach (var shape in group.Value)
-                {
-                    // Select if the center is within the select area.
-                    if (
-                        shape.position.X >= min.X && shape.position.X <= max.X &&
-                        shape.position.Y >= min.Y && shape.position.Y <= max.Y
-                        ) result.Add(shape);
-                }
-            }
-            selection = result;
-
-            // Make selected elements red.
-            foreach (var shape in result) ((CanvasShape)shape).shape.Stroke = Brushes.Red;
-        }
-        public void AddEllipse(object sender, EventArgs e)
-        {
-
-        }
-        public void AddRectangle(object sender, EventArgs e)
-        {
 
 
-        }
-        public void AddOrnament(object sender, EventArgs e)
-        {
-
-        }
-
-        public void Select(Group group)
-        {
-            Deselect();
-
-            selection = new List<CanvasObject> { group };
-
-            // Make selected elements red.
-            foreach (var shape in objects[group]) shape.shape.Stroke = Brushes.Red;
-        }
-
-
-        public void Deselect()
-        {
-            if (selection == null) return;
-
-            // Turn previously selected elements back to being black.
-            foreach (var obj in selection)
-            {
-                if (obj is CanvasShape) ((CanvasShape)obj).shape.Stroke = Brushes.Black;
-            }
-
-            selection = null;
-        }
-
-
-        public List<CanvasShape> GetSelection()
-        {
-            List<CanvasShape> result = new List<CanvasShape>();
-            if (selection == null) return result;
-
+        public void ClearSelection() {
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => { },
-                (CanvasShape shape) => { result.Add(shape); },
+                (CanvasShape shape) => { shape.selected = false; },
                 true
             );
 
-            return result;
+            foreach (CanvasObject o in selection) o.accept(visitor);
+
+            this.selection.Clear();
+        }
+        public IReadOnlyList<CanvasObject> GetSelection() {
+            return selection;
+        }
+        #endregion Selection
+        #region PageHandlers
+        public void ClearCanvas(object sender = null, EventArgs args = null) {
+            foreach (var o in objects) RemoveObject(o);
+            this.objects.Clear();
+            
+            this.ClearSelection();
+        }
+
+        public void AddEllipse(object sender, EventArgs e) { }
+        public void AddRectangle(object sender, EventArgs e) { }
+        public void AddOrnament(object sender, EventArgs e) { }
+
+        private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
+            this.mouseDownPos = (Vector) args.GetPosition(Canvas);
+            this.mousePrevPos = mouseDownPos;
+
+            // Drag to select, Shift + drag to move selection.
+            mouseState = (IsKeyDown(Key.LeftShift) || IsKeyDown(Key.RightShift)) ? MouseState.MOVING : MouseState.SELECTING;
+
+            // If selecting, create the selection rectangle.
+            if (mouseState == MouseState.SELECTING) {
+                this.selectionRectangle = new CanvasShape(
+                    CloneShape.Clone(PlatonicForms.SelectionRectangle),
+                    Group.Global,
+                    mouseDownPos.Value
+                );
+
+                AddObject(this.selectionRectangle);
+
+                recording = new SelectCommand();
+                ((SelectCommand) recording).RecordStart(selection);
+            } else if (mouseState == MouseState.MOVING) {
+                recording = new MoveCommand();
+                ((MoveCommand) recording).RecordStart(selection);
+            }
         }
 
 
-        private void HandleMouseDown(object sender, MouseButtonEventArgs args)
-        {
-            mouseDownPos = args.GetPosition(Canvas);
+        private void HandleMouseUp(object sender, MouseButtonEventArgs args) {
+            if (mouseState == MouseState.SELECTING) {
+                RemoveObject(selectionRectangle);
+                this.selectionRectangle = null;
 
-            selectionRect = new CanvasShape(
-                CloneShape.Clone(PlatonicForms.SelectionRectangle),
-                Group.Global,
-                mouseDownPos.Value
-            );
+                ((SelectCommand) recording).RecordEnd(selection);
+            } else if (mouseState == MouseState.MOVING) {
+                ((MoveCommand) recording).RecordEnd(selection);
+            }
 
-            Add(selectionRect);
+            this.mouseState = MouseState.NONE;
+            this.mouseDownPos = null;
+            this.mousePrevPos = null;
+
+            if (recording != null) {
+                history.Add(recording);
+                recording = null;
+            }
         }
 
 
-        private void HandleMouseUp(object sender, MouseButtonEventArgs args)
-        {
-            if (mouseDownPos == null) return;
+        private void HandleMouseMove(object sender, MouseEventArgs args) {
+            if (mouseState == MouseState.NONE) return;
 
-            Point mouseUpPos = args.GetPosition(Canvas);
-            (Point min, Point max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mouseUpPos);
+            Vector mousePos = (Vector) args.GetPosition(Canvas);
+            Vector delta = mousePos - mousePrevPos.Value;
 
-            Remove(selectionRect);
+            if (mouseState == MouseState.SELECTING) {
+                // Update selection rect & select everything inside.
+                SelectRegion(mouseDownPos.Value, mousePos);
 
-            Select(min, max);
+                var (min, max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mousePos);
+                selectionRectangle.position = min;
+                selectionRectangle.size = max - min;
 
-            mouseDownPos = null;
+                InvalidateObject(selectionRectangle);
+                Invalidate();
+            } else {
+                // Update position of all selected items.
+                List<CanvasShape> shapes = new List<CanvasShape>();
+
+                var visitor = new CanvasObjectGenericVisitor(
+                    (Group group) => { },
+                    (CanvasShape shape) => {
+                        shapes.Add(shape);
+                    },
+                    true
+                );
+
+                foreach (var o in selection) o.accept(visitor);
+
+
+                foreach (var shape in shapes) {
+                    shape.position += delta;
+                    InvalidateObject(shape);
+                }
+            }
+
+
+            this.mousePrevPos = mousePos;
         }
 
 
-        private void HandleMouseMove(object sender, MouseEventArgs args)
-        {
-            if (selectionRect == null || mouseDownPos == null) return;
-
-            Point mouseCurrentPos = Mouse.GetPosition(Canvas);
-            (Point min, Point max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mouseCurrentPos);
-
-            Canvas.SetLeft(selectionRect.shape, min.X);
-            Canvas.SetTop(selectionRect.shape, min.Y);
-
-            selectionRect.shape.Width = max.X - min.X;
-            selectionRect.shape.Height = max.Y - min.Y;
-        }
+        private void OnKeyDown(object sender, KeyEventArgs e) { SetKeyDown(e.Key, true);  }
+        private void OnKeyUp(object sender, KeyEventArgs e)   { SetKeyDown(e.Key, false); }
+        #endregion PageHandlers
     }
 }

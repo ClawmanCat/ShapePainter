@@ -62,6 +62,13 @@
     </ApplicationDefinition>
     <Compile Include="Jsonable.cs" />
     <Compile Include="Shapes\Canvas\CanvasShape.cs" />
+    <Compile Include="Shapes\Canvas\Commands\AddRemoveCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\ClearCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\CompoundCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\GenericCanvasCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\ICanvasCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\MoveCommand.cs" />
+    <Compile Include="Shapes\Canvas\Commands\SelectCommand.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectGenericVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectPrintVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\ICanvasObjectVisitor.cs" />
@@ -69,7 +76,6 @@
     <Compile Include="Shapes\Canvas\Group.cs" />
     <Compile Include="Shapes\Canvas\CanvasObject.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />
-    <Compile Include="Utility\Command\ICanvasCommand.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Utility\Variant.cs" />
     <Page Include="MainWindow.xaml">

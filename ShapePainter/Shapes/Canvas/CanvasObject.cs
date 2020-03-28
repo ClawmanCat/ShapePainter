@@ -12,23 +12,29 @@ using System.Windows.Shapes;
 
 namespace ShapePainter.Shapes {
     public abstract class CanvasObject {
-        public Point position { get; set; }
-        [JsonIgnore] [IgnoreDataMember] public CanvasObject parent { get; set; }
+        private Vector backing_position;
+        public Vector position {
+            get { return backing_position; }
+            set {
+                onPositionChanged(backing_position, value);
+                backing_position = value;
+            }
+        }
+
+        public CanvasObject parent { get; set; }
 
 
-        public CanvasObject(Point position, CanvasObject parent) {
+        public CanvasObject(Vector position, CanvasObject parent) {
             this.parent = parent;
+            this.position = position;
 
-            Point parentpos = (parent == null) ? new Point(0, 0) : parent.position;
-            this.position = new Point(
-                position.X + parentpos.X,
-                position.Y + parentpos.Y
-            );
+            Vector parentpos = (parent == null) ? new Vector(0, 0) : parent.position;
+            this.position += parentpos;
         }
 
 
-        bool ancestor(CanvasObject obj) {
-            for (var current = parent; current != null; current = current.parent) {
+        public bool ancestor(CanvasObject obj, bool self = false) {
+            for (var current = self ? this : parent; current != null; current = current.parent) {
                 if (current == obj) return true;
             }
 
@@ -37,5 +43,6 @@ namespace ShapePainter.Shapes {
 
 
         public abstract void accept(ICanvasObjectVisitor visitor);
+        public virtual void onPositionChanged(Vector oldPos, Vector newPos) { }
     }
 }

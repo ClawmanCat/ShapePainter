@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShapePainter.Utility.Command {
+namespace ShapePainter.Shapes.Canvas {
     public interface ICanvasCommand {
-        void run(MainWindow window);
-        void undo(MainWindow window);
+        void doCommand(MainWindow window);
+        void undoCommand(MainWindow window);
     }
 }
