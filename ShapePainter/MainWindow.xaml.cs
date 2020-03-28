@@ -41,14 +41,9 @@ namespace ShapePainter
             this.objects = new List<CanvasObject>();
             this.selection = new List<CanvasObject>();
 
-            //List<CanvasObject> initial = new List<CanvasObject> {
-            //    Group.Global,
-            //    new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(30, 30)),
-            //    new CanvasShape(CloneShape.Clone(PlatonicForms.Rectangle), Group.Global, new Vector(500, 300)),
-            //    new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(750, 700))
-            //};
+            List<CanvasObject> initial = new List<CanvasObject> {};
 
-            //RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
+            RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
         }
 
 
@@ -210,6 +205,7 @@ namespace ShapePainter
             CanvasObjectPrintVisitor v = new CanvasObjectPrintVisitor();
             Group.Global.accept(v);
             String textToPrint = v.getJSON();
+            MessageBox.Show(textToPrint);
 
             File.WriteAllText(fileName, textToPrint);
         }

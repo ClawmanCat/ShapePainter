@@ -32,6 +32,7 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
             string shapePosX = obj.position.X.ToString();
             string shapePosY = obj.position.Y.ToString(); 
+            //size vector?
             string shapeWidth = obj.shape.Width.ToString();
             string shapeHeight = obj.shape.Height.ToString();
             string endComma = ",";
@@ -41,7 +42,7 @@ namespace ShapePainter.Shapes.Canvas.Visitors
             {
                 printedText += trimmedShape + " " + shapePosX + " " + shapePosY + " " + shapeWidth + " " + shapeHeight + endComma;
             }
-            else if (trimmedShape .Contains("ornament"))
+            else if (trimmedShape.Contains("ornament"))
             {
                 string text = "ornament tekst";
                 printedText += shapePosX + " " + text + endComma;
