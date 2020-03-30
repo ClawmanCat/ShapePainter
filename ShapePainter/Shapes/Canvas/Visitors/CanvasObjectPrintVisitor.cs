@@ -14,7 +14,6 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
         public void visit(Group group)
         {
-         //string objGroup = group.ToString();
             string objGroup = "Group";
 
             printedText += "{\n" + objGroup + ":" + "[";
@@ -33,7 +32,6 @@ namespace ShapePainter.Shapes.Canvas.Visitors
 
             string shapePosX = obj.position.X.ToString();
             string shapePosY = obj.position.Y.ToString(); 
-            //size vector?
             string shapeWidth = obj.shape.Width.ToString();
             string shapeHeight = obj.shape.Height.ToString();
             string endComma = ",";
