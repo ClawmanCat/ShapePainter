@@ -17,7 +17,6 @@ namespace ShapePainter.Shapes.Canvas.Visitors
          //string objGroup = group.ToString();
             string objGroup = "Group";
 
-            //printedText += "{\"Group\"[{";
             printedText += "{\n" + objGroup + ":" + "[";
 
             foreach (CanvasObject obj in group.view()) obj.accept(this);

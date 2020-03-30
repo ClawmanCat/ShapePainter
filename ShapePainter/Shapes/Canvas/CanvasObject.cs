@@ -30,6 +30,10 @@ namespace ShapePainter.Shapes {
 
             Vector parentpos = (parent == null) ? new Vector(0, 0) : parent.position;
             this.position += parentpos;
+
+            if (parent is Group) {
+                ((Group) parent).add(this);
+            }
         }
 
 

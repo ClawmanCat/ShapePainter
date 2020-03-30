@@ -42,8 +42,7 @@ namespace ShapePainter
             this.selection = new List<CanvasObject>();
 
             List<CanvasObject> initial = new List<CanvasObject> {
-            Group.Global,
-                new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(30, 30)),
+                Group.Global
             };
 
             RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
@@ -75,7 +74,7 @@ namespace ShapePainter
                     Canvas.Children.Add(shape.shape);
                     InvalidateObject(shape);
                 },
-                true
+                false
             );
 
             obj.accept(visitor);
@@ -303,7 +302,6 @@ namespace ShapePainter
                                 CloneShape.Clone(PlatonicForms.Ellipse),
                                 Group.Global,
                                 new Vector(x, y)
-                            //new Point(x, y)
                             ));
                         }
                         else if(shapename.Contains("Rectangle"))
@@ -312,7 +310,6 @@ namespace ShapePainter
                                CloneShape.Clone(PlatonicForms.Rectangle),
                                Group.Global,
                                new Vector(x,y)
-                               //new Point(x, y)
                            ));
                         }
                     }
