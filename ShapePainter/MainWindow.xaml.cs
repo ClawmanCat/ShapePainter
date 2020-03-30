@@ -1,20 +1,20 @@
 ﻿using ShapePainter.Shapes;
 using ShapePainter.Shapes.Canvas;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Path = System.IO.Path;
+using System.Windows.Controls;
+using System.Windows.Input;
+using ShapePainter.Shapes.Canvas.Visitors;
+using System.Linq;
 
-namespace ShapePainter {
+namespace ShapePainter
+{
     public partial class MainWindow : Window {
         private enum MouseState { NONE, SELECTING, MOVING }
 
@@ -42,10 +42,7 @@ namespace ShapePainter {
             this.selection = new List<CanvasObject>();
 
             List<CanvasObject> initial = new List<CanvasObject> {
-                Group.Global,
-                new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(30, 30)),
-                new CanvasShape(CloneShape.Clone(PlatonicForms.Rectangle), Group.Global, new Vector(500, 300)),
-                new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse),   Group.Global, new Vector(750, 700))
+                Group.Global
             };
 
             RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
@@ -77,7 +74,7 @@ namespace ShapePainter {
                     Canvas.Children.Add(shape.shape);
                     InvalidateObject(shape);
                 },
-                true
+                false
             );
 
             obj.accept(visitor);
@@ -113,18 +110,18 @@ namespace ShapePainter {
 
             return result;
         }
-
-
-        private void Invalidate() {
+        private void Invalidate()
+        {
             this.InvalidateVisual();
         }
 
-        public void InvalidateObject(CanvasObject obj) {
+        public void InvalidateObject(CanvasObject obj)
+        {
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => { },
                 (CanvasShape shape) => {
                     Canvas.SetLeft(shape.shape, shape.position.X);
-                    Canvas.SetTop(shape.shape,  shape.position.Y);
+                    Canvas.SetTop(shape.shape, shape.position.Y);
                 },
                 true
             );
@@ -132,15 +129,15 @@ namespace ShapePainter {
             obj.accept(visitor);
             Invalidate();
         }
-
-
-        public void SelectRegion(Vector a, Vector b, bool overwrite = true) {
+        public void SelectRegion(Vector a, Vector b, bool overwrite = true)
+        {
             List<CanvasObject> result = new List<CanvasObject>();
 
             Vector min = new Vector(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y));
             Vector max = new Vector(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y));
 
-            foreach (CanvasObject o in objects) {
+            foreach (CanvasObject o in objects)
+            {
                 if (
                     o.position.X >= min.X && o.position.X < max.X &&
                     o.position.Y >= min.Y && o.position.Y < max.Y
@@ -152,7 +149,8 @@ namespace ShapePainter {
 
 
         #region Selection
-        public void SelectObjects(IEnumerable<CanvasObject> objects, bool overwrite = true) {
+        public void SelectObjects(IEnumerable<CanvasObject> objects, bool overwrite = true)
+        {
             selection.Remove(selectionRectangle);   // Can't select the selection rectangle.
 
             if (overwrite) ClearSelection();
@@ -168,6 +166,167 @@ namespace ShapePainter {
             selection.AddRange(objects);
         }
 
+        public void New(object sender, EventArgs e)
+        {
+        }
+        private void Save(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                Rect rect = new Rect(Canvas.RenderSize);
+
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96d, 96d, PixelFormats.Pbgra32);
+
+                Canvas.Measure(new Size((int)Canvas.Width, (int)Canvas.Height));
+                Canvas.Arrange(new Rect(new Size((int)Canvas.Width, (int)Canvas.Height)));
+
+                renderTargetBitmap.Render(Canvas);
+
+                string fileName = saveFileDialog.FileName;
+                var fileExtension = Path.GetExtension(saveFileDialog.FileName);
+                switch (fileExtension.ToLower())
+                {
+                    case ".json":
+                        SaveToJSON(renderTargetBitmap, fileName);
+                        break;
+                    case ".jpg":
+                        SaveToJPG(renderTargetBitmap, fileName);
+                        break;
+                    case ".png":  
+                        SaveToPNG(renderTargetBitmap, fileName);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(fileExtension);
+                }
+            }
+        }
+        public void SaveToJSON(RenderTargetBitmap renderTargetBitmap, string fileName)
+        {
+            CanvasObjectPrintVisitor v = new CanvasObjectPrintVisitor();
+            Group.Global.accept(v);
+            String textToPrint = v.getJSON();
+            MessageBox.Show(textToPrint);
+
+            File.WriteAllText(fileName, textToPrint);
+        }
+        public void SaveToJPG(RenderTargetBitmap renderTargetBitmap, string fileName)
+        {
+            JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
+            jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+            using (FileStream file = File.Create(fileName))
+            {
+                jpgEncoder.Save(file);
+            }
+        }
+        public void SaveToPNG(RenderTargetBitmap renderTargetBitmap, string fileName)
+        {
+            PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
+            pngEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+
+            using (FileStream file = File.Create(fileName))
+            {
+                pngEncoder.Save(file);
+            }
+        }
+        public void Open(object sender, EventArgs e)
+        {
+
+            OpenFileDialog openfileDialog = new OpenFileDialog();
+
+            openfileDialog.Title = "Select a file";
+            openfileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
+            if (openfileDialog.ShowDialog() == true)
+            {
+                var filextension = Path.GetExtension(openfileDialog.FileName);
+
+                switch (filextension.ToLower())
+                {
+                    case ".json":
+                        OpenJSON(openfileDialog);
+                        break;
+                    case ".jpg":
+                        OpenJPG(openfileDialog);
+                        break;
+                    case ".png":
+                        OpenPNG(openfileDialog);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(filextension);
+                }
+            }
+        }
+        public static long CountLinesJSON(StreamReader r, string f)
+        {
+            long count = 0;
+            using (r = new StreamReader(f))
+            {
+                string line;
+                while ((line = r.ReadLine()) != null)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+        public void OpenJSON(OpenFileDialog openfileDialog)
+        {
+            if (openfileDialog.FileName.Trim() != string.Empty)
+            {
+                using (StreamReader r = new StreamReader(openfileDialog.FileName))
+                {
+                    string json = r.ReadToEnd();
+
+                    long fileLength = CountLinesJSON(r, openfileDialog.FileName);
+                    //while?
+                    for (int index = 0; index < fileLength - 3; index++)
+                    {
+
+                        var searchShape = json.Split('[')[1];
+                        var foundShape = searchShape.Split(',')[index];
+                        string[] shapeThing = foundShape.Split(' ');/*gives shape string*/
+
+                        int x = Convert.ToInt32(shapeThing[1]);
+                        int y = Convert.ToInt32(shapeThing[2]);
+
+                        string pattern = "[':]";
+                        string replacement = "";
+                        System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex(pattern);
+                        string shapename = rgx.Replace(shapeThing[0], replacement);
+
+                        if (shapename.Contains("Ellipse"))
+                        {
+                            AddObject(new CanvasShape(
+                                CloneShape.Clone(PlatonicForms.Ellipse),
+                                Group.Global,
+                                new Vector(x, y)
+                            ));
+                        }
+                        else if(shapename.Contains("Rectangle"))
+                        {
+                            AddObject(new CanvasShape(
+                               CloneShape.Clone(PlatonicForms.Rectangle),
+                               Group.Global,
+                               new Vector(x,y)
+                           ));
+                        }
+                    }
+                }
+            }
+        }
+        public void OpenPNG(OpenFileDialog openfileDialog)
+        {
+            var pngPath = openfileDialog.FileName;
+            Canvas.Background = new ImageBrush(new BitmapImage(new Uri(pngPath)));
+        }
+        public void OpenJPG(OpenFileDialog openfileDialog)
+        {
+            var jpgPath = openfileDialog.FileName;
+            Canvas.Background = new ImageBrush(new BitmapImage(new Uri(jpgPath)));
+        }
+
 
         public void ClearSelection() {
             var visitor = new CanvasObjectGenericVisitor(
@@ -180,14 +339,10 @@ namespace ShapePainter {
 
             this.selection.Clear();
         }
-
-
         public IReadOnlyList<CanvasObject> GetSelection() {
             return selection;
         }
         #endregion Selection
-
-
         #region PageHandlers
         public void ClearCanvas(object sender = null, EventArgs args = null) {
             foreach (var o in objects) RemoveObject(o);
@@ -196,16 +351,9 @@ namespace ShapePainter {
             this.ClearSelection();
         }
 
-
-        public void New(object sender, EventArgs e) { }
-        public void Save(object sender, EventArgs e) { }
-        public void Open(object sender, EventArgs e) { }
-
-
         public void AddEllipse(object sender, EventArgs e) { }
         public void AddRectangle(object sender, EventArgs e) { }
         public void AddOrnament(object sender, EventArgs e) { }
-
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
             this.mouseDownPos = (Vector) args.GetPosition(Canvas);

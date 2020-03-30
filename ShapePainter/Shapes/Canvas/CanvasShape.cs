@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,7 @@ using System.Windows.Shapes;
 
 namespace ShapePainter.Shapes {
     public class CanvasShape : CanvasObject {
+        [JsonIgnore]
         public Shape shape { get; set; }
 
         public Vector size {

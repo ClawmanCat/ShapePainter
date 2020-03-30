@@ -40,6 +40,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -58,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Jsonable.cs" />
     <Compile Include="Shapes\Canvas\CanvasShape.cs" />
     <Compile Include="Shapes\Canvas\Commands\AddRemoveCommand.cs" />
     <Compile Include="Shapes\Canvas\Commands\ClearCommand.cs" />
@@ -67,6 +70,7 @@
     <Compile Include="Shapes\Canvas\Commands\MoveCommand.cs" />
     <Compile Include="Shapes\Canvas\Commands\SelectCommand.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectGenericVisitor.cs" />
+    <Compile Include="Shapes\Canvas\Visitors\CanvasObjectPrintVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\ICanvasObjectVisitor.cs" />
     <Compile Include="Shapes\CloneShape.cs" />
     <Compile Include="Shapes\Canvas\Group.cs" />

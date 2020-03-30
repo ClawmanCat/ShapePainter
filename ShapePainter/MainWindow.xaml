@@ -10,14 +10,14 @@
         PreviewKeyUp="OnKeyUp"   
      >
      <Grid>
-          <Grid.RowDefinitions>
+          <!--<Grid.RowDefinitions>
                <RowDefinition></RowDefinition>
           </Grid.RowDefinitions>
 
           <Grid.ColumnDefinitions>
                <ColumnDefinition Width="1*"></ColumnDefinition>
                <ColumnDefinition Width="8*"></ColumnDefinition>
-          </Grid.ColumnDefinitions>
+          </Grid.ColumnDefinitions>-->
 
 
           <DockPanel>
@@ -116,9 +116,10 @@
 
           <Canvas 
                x:Name="Canvas"
-               Background="Transparent"
                Grid.Row="0"
                Grid.Column="1"
+            Width="1280" 
+            Height="750"
                PreviewMouseDown="HandleMouseDown" 
                PreviewMouseUp="HandleMouseUp"
                PreviewMouseMove="HandleMouseMove"
