@@ -350,10 +350,38 @@ namespace ShapePainter
             
             this.ClearSelection();
         }
-
-        public void AddEllipse(object sender, EventArgs e) { }
-        public void AddRectangle(object sender, EventArgs e) { }
-        public void AddOrnament(object sender, EventArgs e) { }
+        public void Undo(object sender, EventArgs e)
+        {
+            //watch history list
+            if (history.Count > 0)
+            {
+                var lastItem = history[history.Count - 1];
+            }
+        }
+        public void Redo(object sender, EventArgs e)
+        {
+            if (history.Count > 0)
+            {
+                var lastItem = history[history.Count - 1];
+            }
+        }
+        public void AddEllipse(object sender, EventArgs e) {
+            //point where mouse is x y
+            AddObject(new CanvasShape(
+            CloneShape.Clone(PlatonicForms.Ellipse),
+            Group.Global,
+            new Vector(30, 30)
+            ));
+        }
+        public void AddRectangle(object sender, EventArgs e) {
+            //point where mouse is x y
+            AddObject(new CanvasShape(
+            CloneShape.Clone(PlatonicForms.Rectangle),
+            Group.Global,
+            new Vector(50, 50)
+            ));
+        }
+        public void AddOrnament(object sender, EventArgs e) {}
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
             this.mouseDownPos = (Vector) args.GetPosition(Canvas);

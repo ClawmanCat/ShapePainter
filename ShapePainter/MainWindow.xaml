@@ -10,16 +10,6 @@
         PreviewKeyUp="OnKeyUp"   
      >
      <Grid>
-          <!--<Grid.RowDefinitions>
-               <RowDefinition></RowDefinition>
-          </Grid.RowDefinitions>
-
-          <Grid.ColumnDefinitions>
-               <ColumnDefinition Width="1*"></ColumnDefinition>
-               <ColumnDefinition Width="8*"></ColumnDefinition>
-          </Grid.ColumnDefinitions>-->
-
-
           <DockPanel>
                <ToolBarTray DockPanel.Dock="Top">
                     <ToolBar>
@@ -79,7 +69,35 @@
                                    <TextBlock Margin="3,0,0,0">Clear</TextBlock>
                               </StackPanel>
                          </Button>
-                    </ToolBar>
+                        <Button Click="Undo">
+                            <StackPanel Orientation="Horizontal">
+                                <Image 
+                                        x:Name="undo"
+                                        Source="Icons/Undo.png" 
+                                        RenderOptions.BitmapScalingMode="Fant"
+                                        Stretch="Fill"
+                                        Width="15"
+                                        VerticalAlignment="Top"
+                                        Margin="10,0,0,0"
+                                        HorizontalAlignment="Center"
+                                       />
+                            </StackPanel>
+                        </Button>
+                        <Button Click="Redo">
+                            <StackPanel Orientation="Horizontal">
+                                <Image 
+                                        x:Name="redo"
+                                        Source="Icons/Redo.png" 
+                                        RenderOptions.BitmapScalingMode="Fant"
+                                        Stretch="Fill"
+                                        Width="15"
+                                        VerticalAlignment="Top"
+                                        Margin="10,0,0,0"
+                                        HorizontalAlignment="Center"
+                                       />
+                            </StackPanel>
+                        </Button>
+                </ToolBar>
                     <ToolBar>
                          <Button Click="AddEllipse">
                               <StackPanel Orientation="Horizontal">
@@ -118,8 +136,8 @@
                x:Name="Canvas"
                Grid.Row="0"
                Grid.Column="1"
-            Width="1280" 
-            Height="750"
+               Width="1280" 
+               Height="750"
                PreviewMouseDown="HandleMouseDown" 
                PreviewMouseUp="HandleMouseUp"
                PreviewMouseMove="HandleMouseMove"
