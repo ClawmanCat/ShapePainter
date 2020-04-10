@@ -112,7 +112,7 @@
                                    />
                               </StackPanel>
                          </Button>
-                         <Button Click="AddRectangle">
+                    <Button Click="SelectRectangle" x:Name="rectanglebtn">
                               <StackPanel Orientation="Horizontal">
                                    <Image 
                                         Source="Icons/Rectangle.png"
@@ -128,7 +128,7 @@
                          <Button Content="Ornament" Click="AddOrnament"/>
                     </ToolBar>
                </ToolBarTray>
-               <TextBox AcceptsReturn="True" />
+               <!--<TextBox AcceptsReturn="True" />-->
           </DockPanel>
 
 
@@ -138,9 +138,11 @@
                Grid.Column="1"
                Width="1280" 
                Height="750"
+              Background="Transparent"
                PreviewMouseDown="HandleMouseDown" 
                PreviewMouseUp="HandleMouseUp"
                PreviewMouseMove="HandleMouseMove"
+               MouseLeftButtonDown="addShapesClick"
           ></Canvas>
      </Grid>
 </Window>

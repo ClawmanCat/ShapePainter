@@ -34,7 +34,7 @@ namespace ShapePainter
 
         private Dictionary<Key, bool> keyboard = new Dictionary<Key, bool>();
 
-
+        private bool rectanglebutton = false;
         public MainWindow() {
             InitializeComponent();
 
@@ -46,6 +46,7 @@ namespace ShapePainter
             };
 
             RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
+
         }
 
 
@@ -365,6 +366,15 @@ namespace ShapePainter
                 var lastItem = history[history.Count - 1];
             }
         }
+        public void addShapesClick(object sender, MouseEventArgs e)
+        {
+            if (rectanglebutton == true)
+            {
+                MessageBox.Show("left button");
+
+                AddRectangle();
+            }
+        }
         public void AddEllipse(object sender, EventArgs e) {
             //point where mouse is x y
             AddObject(new CanvasShape(
@@ -373,13 +383,24 @@ namespace ShapePainter
             new Vector(30, 30)
             ));
         }
-        public void AddRectangle(object sender, EventArgs e) {
-            //point where mouse is x y
-            AddObject(new CanvasShape(
-            CloneShape.Clone(PlatonicForms.Rectangle),
-            Group.Global,
-            new Vector(50, 50)
-            ));
+            public void SelectRectangle(object sender, EventArgs e)
+            {
+                rectanglebutton = true;
+            MessageBox.Show("clicked Rectangle");
+            //rectanglebtn.Click += new event(AddRectangle);
+        }
+        public void AddRectangle() {
+                MessageBox.Show("addrect");
+                //point where mouse is x y
+                Point mousepos = Mouse.GetPosition(Canvas);
+
+                AddObject(new CanvasShape(
+                CloneShape.Clone(PlatonicForms.Rectangle),
+                Group.Global,
+                new Vector(mousepos.X, mousepos.Y)
+                ));
+                //if other button clicked set to false
+                //rectanglebutton = false;        
         }
         public void AddOrnament(object sender, EventArgs e) {}
 
