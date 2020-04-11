@@ -367,20 +367,6 @@ namespace ShapePainter
                 var lastItem = history[history.Count - 1];
             }
         }
-        //add shape when clicked button
-        //public void addShapesClick(object sender, MouseEventArgs e)
-        //{
-        //    if (rectangleButton == true)
-        //    {
-        //        MessageBox.Show("left button");
-
-        //        AddRectangle(sender, e);
-        //    }
-        //    else if(ellipseButton == true)
-        //    {
-        //        AddEllipse(sender, e);
-        //    }
-        //}
         public void SelectRectangle(object sender, EventArgs e)
         {
             rectangleButton = true;
@@ -419,7 +405,16 @@ namespace ShapePainter
             this.mousePrevPos = mouseDownPos;
 
             // Drag to select, Shift + drag to move selection.
-            mouseState = (IsKeyDown(Key.LeftShift) || IsKeyDown(Key.RightShift)) ? MouseState.MOVING : MouseState.SELECTING;
+            //mouseState = (IsKeyDown(Key.LeftShift) || IsKeyDown(Key.RightShift)) ? MouseState.MOVING : MouseState.SELECTING;
+            if(IsKeyDown(Key.LeftShift) || IsKeyDown(Key.RightShift))
+            {
+                mouseState = MouseState.MOVING;
+                mouseState = MouseState.SELECTING;
+            }
+            else if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                mouseState = MouseState.ADDING_SHAPE;
+            }
 
             // If selecting, create the selection rectangle.
             if (mouseState == MouseState.SELECTING) {
@@ -433,9 +428,16 @@ namespace ShapePainter
 
                 recording = new SelectCommand();
                 ((SelectCommand) recording).RecordStart(selection);
+
+                //set buttons on false
+                ellipseButton = false;
+                rectangleButton = false;
             } else if (mouseState == MouseState.MOVING) {
                 recording = new MoveCommand();
                 ((MoveCommand) recording).RecordStart(selection);
+                //set buttons on false
+                ellipseButton = false;
+                rectangleButton = false;
             }
             else if(mouseState == MouseState.ADDING_SHAPE)
             {
