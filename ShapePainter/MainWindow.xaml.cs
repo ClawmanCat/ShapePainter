@@ -16,7 +16,7 @@ using System.Linq;
 namespace ShapePainter
 {
     public partial class MainWindow : Window {
-        private enum MouseState { NONE, SELECTING, MOVING }
+        private enum MouseState { NONE, SELECTING, MOVING, ADDING_SHAPE }
 
         public List<CanvasObject> objects { get; set; }
         public List<CanvasObject> selection { get; set; }
@@ -368,19 +368,19 @@ namespace ShapePainter
             }
         }
         //add shape when clicked button
-        public void addShapesClick(object sender, MouseEventArgs e)
-        {
-            if (rectangleButton == true)
-            {
-                MessageBox.Show("left button");
+        //public void addShapesClick(object sender, MouseEventArgs e)
+        //{
+        //    if (rectangleButton == true)
+        //    {
+        //        MessageBox.Show("left button");
 
-                AddRectangle(sender, e);
-            }
-            else if(ellipseButton == true)
-            {
-                AddEllipse(sender, e);
-            }
-        }
+        //        AddRectangle(sender, e);
+        //    }
+        //    else if(ellipseButton == true)
+        //    {
+        //        AddEllipse(sender, e);
+        //    }
+        //}
         public void SelectRectangle(object sender, EventArgs e)
         {
             rectangleButton = true;
@@ -394,7 +394,6 @@ namespace ShapePainter
             MessageBox.Show("clicked Ellipse");
         }
         public void AddEllipse(object sender, MouseEventArgs e) {
-            //point where mouse is x y
             Point mousepos = Mouse.GetPosition(Canvas);
 
             AddObject(new CanvasShape(
@@ -405,17 +404,13 @@ namespace ShapePainter
 
         } 
         public void AddRectangle(object sender, MouseEventArgs e) {
-                MessageBox.Show("addrect");
-                //point where mouse is x y
                 Point mousepos = Mouse.GetPosition(Canvas);
 
                 AddObject(new CanvasShape(
                 CloneShape.Clone(PlatonicForms.Rectangle),
                 Group.Global,
                 new Vector(mousepos.X, mousepos.Y)
-                ));
-                //if other button clicked set to false
-                //rectanglebutton = false;        
+                ));   
         }
         public void AddOrnament(object sender, EventArgs e) {}
 
@@ -441,6 +436,17 @@ namespace ShapePainter
             } else if (mouseState == MouseState.MOVING) {
                 recording = new MoveCommand();
                 ((MoveCommand) recording).RecordStart(selection);
+            }
+            else if(mouseState == MouseState.ADDING_SHAPE)
+            {
+                if (rectangleButton == true)
+                {
+                    AddRectangle(sender, args);
+                }
+                else if (ellipseButton == true)
+                {
+                    AddEllipse(sender, args);
+                }
             }
         }
 

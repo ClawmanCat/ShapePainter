@@ -138,11 +138,10 @@
                Grid.Column="1"
                Width="1280" 
                Height="750"
-              Background="Transparent"
+               Background="Transparent"
                PreviewMouseDown="HandleMouseDown" 
                PreviewMouseUp="HandleMouseUp"
                PreviewMouseMove="HandleMouseMove"
-                MouseRightButtonDown="addShapesClick"
           ></Canvas>
      </Grid>
 </Window>
