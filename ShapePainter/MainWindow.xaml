@@ -11,23 +11,9 @@
      >
      <Grid>
           <DockPanel>
-               <ToolBarTray DockPanel.Dock="Top">
-                    <ToolBar>
-                         <Button Click="New">
-                              <StackPanel Orientation="Horizontal">
-                                   <Image 
-                                        Source="Icons/NewFile.png" 
-                                        RenderOptions.BitmapScalingMode="Fant"
-                                        Stretch="Fill"
-                                        Width="10"
-                                        VerticalAlignment="Top"
-                                        Margin="10,0,0,0"
-                                        HorizontalAlignment="Center"
-                                   />
-                                   <TextBlock Margin="3,0,0,0">New</TextBlock>
-                              </StackPanel>
-                         </Button>
-                         <Button Click="Open">
+               <ToolBarTray DockPanel.Dock="Top" >
+                <ToolBar ToolBarTray.IsLocked="True">
+                    <Button Click="Open">
                               <StackPanel Orientation="Horizontal">
                                    <Image 
                                         Source="Icons/Open.png" 
@@ -97,8 +83,8 @@
                                        />
                             </StackPanel>
                         </Button>
-                </ToolBar>
-                    <ToolBar>
+                    </ToolBar>
+                <ToolBar ToolBarTray.IsLocked="True">
                     <Button Click="SelectEllipse">
                               <StackPanel Orientation="Horizontal">
                                    <Image 
@@ -128,7 +114,6 @@
                          <Button Content="Ornament" Click="AddOrnament"/>
                     </ToolBar>
                </ToolBarTray>
-               <!--<TextBox AcceptsReturn="True" />-->
           </DockPanel>
 
 

@@ -22,6 +22,7 @@ namespace ShapePainter
         public List<CanvasObject> selection { get; set; }
 
         private List<ICanvasCommand> history = new List<ICanvasCommand>();
+        private int history_pointer;
 
         private MouseState mouseState;
         private Vector? mouseDownPos = null, mousePrevPos = null;
@@ -166,10 +167,6 @@ namespace ShapePainter
             foreach (CanvasObject o in objects) o.accept(visitor);
 
             selection.AddRange(objects);
-        }
-
-        public void New(object sender, EventArgs e)
-        {
         }
         private void Save(object sender, EventArgs e)
         {
@@ -355,29 +352,31 @@ namespace ShapePainter
         public void Undo(object sender, EventArgs e)
         {
             //watch history list
-            if (history.Count > 0)
-            {
-                var lastItem = history[history.Count - 1];
-            }
+            if (history.Count == 0 || history_pointer == 0) return;
+
+            var item = history[history_pointer];
+            item.undoCommand(this);
+
+            --history_pointer;
         }
         public void Redo(object sender, EventArgs e)
         {
-            if (history.Count > 0)
-            {
-                var lastItem = history[history.Count - 1];
-            }
+            if (history.Count == 0 || history_pointer == 0) return;
+
+            var item = history[history_pointer];
+            item.doCommand(this);
+
+            ++history_pointer;
         }
         public void SelectRectangle(object sender, EventArgs e)
         {
             rectangleButton = true;
             ellipseButton = false;
-            MessageBox.Show("clicked Rectangle");
         }
         public void SelectEllipse(object sender, EventArgs e)
         {
             ellipseButton = true;
             rectangleButton = false;
-            MessageBox.Show("clicked Ellipse");
         }
         public void AddEllipse(object sender, MouseEventArgs e) {
             Point mousepos = Mouse.GetPosition(Canvas);
@@ -392,7 +391,8 @@ namespace ShapePainter
         public void AddRectangle(object sender, MouseEventArgs e) {
                 Point mousepos = Mouse.GetPosition(Canvas);
 
-                AddObject(new CanvasShape(
+        //To do: implement run command
+            AddObject(new CanvasShape(
                 CloneShape.Clone(PlatonicForms.Rectangle),
                 Group.Global,
                 new Vector(mousepos.X, mousepos.Y)
