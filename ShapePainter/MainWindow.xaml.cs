@@ -34,7 +34,8 @@ namespace ShapePainter
 
         private Dictionary<Key, bool> keyboard = new Dictionary<Key, bool>();
 
-        private bool rectanglebutton = false;
+        private bool rectangleButton = false;
+        private bool ellipseButton = false;
         public MainWindow() {
             InitializeComponent();
 
@@ -366,30 +367,44 @@ namespace ShapePainter
                 var lastItem = history[history.Count - 1];
             }
         }
+        //add shape when clicked button
         public void addShapesClick(object sender, MouseEventArgs e)
         {
-            if (rectanglebutton == true)
+            if (rectangleButton == true)
             {
                 MessageBox.Show("left button");
 
-                AddRectangle();
+                AddRectangle(sender, e);
+            }
+            else if(ellipseButton == true)
+            {
+                AddEllipse(sender, e);
             }
         }
-        public void AddEllipse(object sender, EventArgs e) {
+        public void SelectRectangle(object sender, EventArgs e)
+        {
+            rectangleButton = true;
+            ellipseButton = false;
+            MessageBox.Show("clicked Rectangle");
+        }
+        public void SelectEllipse(object sender, EventArgs e)
+        {
+            ellipseButton = true;
+            rectangleButton = false;
+            MessageBox.Show("clicked Ellipse");
+        }
+        public void AddEllipse(object sender, MouseEventArgs e) {
             //point where mouse is x y
+            Point mousepos = Mouse.GetPosition(Canvas);
+
             AddObject(new CanvasShape(
             CloneShape.Clone(PlatonicForms.Ellipse),
             Group.Global,
-            new Vector(30, 30)
+            new Vector(mousepos.X, mousepos.Y)
             ));
-        }
-            public void SelectRectangle(object sender, EventArgs e)
-            {
-                rectanglebutton = true;
-            MessageBox.Show("clicked Rectangle");
-            //rectanglebtn.Click += new event(AddRectangle);
-        }
-        public void AddRectangle() {
+
+        } 
+        public void AddRectangle(object sender, MouseEventArgs e) {
                 MessageBox.Show("addrect");
                 //point where mouse is x y
                 Point mousepos = Mouse.GetPosition(Canvas);

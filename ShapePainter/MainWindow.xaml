@@ -99,7 +99,7 @@
                         </Button>
                 </ToolBar>
                     <ToolBar>
-                         <Button Click="AddEllipse">
+                    <Button Click="SelectEllipse">
                               <StackPanel Orientation="Horizontal">
                                    <Image 
                                         Source="Icons/Ellipse.png"
@@ -142,7 +142,7 @@
                PreviewMouseDown="HandleMouseDown" 
                PreviewMouseUp="HandleMouseUp"
                PreviewMouseMove="HandleMouseMove"
-               MouseLeftButtonDown="addShapesClick"
+                MouseRightButtonDown="addShapesClick"
           ></Canvas>
      </Grid>
 </Window>
