@@ -111,7 +111,19 @@
                                    />
                               </StackPanel>
                          </Button>
-                         <Button Content="Ornament" Click="AddOrnament"/>
+                    <Button Click="AddOrnament">
+                        <StackPanel Orientation="Horizontal">
+                            <Image 
+                                        Source="Icons/Ornament.png"
+                                        RenderOptions.BitmapScalingMode="Fant"
+                                        Stretch="Fill"
+                                        Width="70"
+                                        VerticalAlignment="Top"
+                                        Margin="0,0,0,0"
+                                        HorizontalAlignment="Center"
+                                   />
+                        </StackPanel>
+                    </Button>
                     </ToolBar>
                </ToolBarTray>
           </DockPanel>

@@ -51,7 +51,6 @@ namespace ShapePainter
 
         }
 
-
         public void RunCommand(ICanvasCommand command) {
             command.doCommand(this);
             history.Add(command);
@@ -100,9 +99,6 @@ namespace ShapePainter
             obj.accept(visitor);
             Invalidate();
         }
-
-
-
 
         public List<CanvasObject> GetSelectedObjects() {
             List<CanvasObject> result = new List<CanvasObject>();
@@ -352,21 +348,26 @@ namespace ShapePainter
         public void Undo(object sender, EventArgs e)
         {
             //watch history list
-            if (history.Count == 0 || history_pointer == 0) return;
+            if (history.Count == 0 || history_pointer == 0)
+            {
+                var item = history[history_pointer];
+                item.undoCommand(this);
 
-            var item = history[history_pointer];
-            item.undoCommand(this);
-
-            --history_pointer;
+                --history_pointer;
+            }
+            MessageBox.Show("undo");
         }
         public void Redo(object sender, EventArgs e)
         {
-            if (history.Count == 0 || history_pointer == 0) return;
+            if (history.Count == 0 || history_pointer == 0)
+            {
+                //when first clicked undo the history pointer is less than 0 (-1)
+                var item = history[history_pointer];
+                item.doCommand(this);
 
-            var item = history[history_pointer];
-            item.doCommand(this);
-
-            ++history_pointer;
+                ++history_pointer;
+            }
+            MessageBox.Show("redo");
         }
         public void SelectRectangle(object sender, EventArgs e)
         {
@@ -381,22 +382,20 @@ namespace ShapePainter
         public void AddEllipse(object sender, MouseEventArgs e) {
             Point mousepos = Mouse.GetPosition(Canvas);
 
-            AddObject(new CanvasShape(
+            RunCommand(new AddRemoveCommand(new CanvasShape(
             CloneShape.Clone(PlatonicForms.Ellipse),
             Group.Global,
             new Vector(mousepos.X, mousepos.Y)
-            ));
-
+            ), AddRemoveCommand.Mode.ADD));
         } 
         public void AddRectangle(object sender, MouseEventArgs e) {
-                Point mousepos = Mouse.GetPosition(Canvas);
+            Point mousepos = Mouse.GetPosition(Canvas);
 
-        //To do: implement run command
-            AddObject(new CanvasShape(
-                CloneShape.Clone(PlatonicForms.Rectangle),
-                Group.Global,
-                new Vector(mousepos.X, mousepos.Y)
-                ));   
+            RunCommand(new AddRemoveCommand(new CanvasShape(
+              CloneShape.Clone(PlatonicForms.Rectangle),
+              Group.Global,
+              new Vector(mousepos.X, mousepos.Y)
+              ), AddRemoveCommand.Mode.ADD));
         }
         public void AddOrnament(object sender, EventArgs e) {}
 

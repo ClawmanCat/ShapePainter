@@ -132,5 +132,8 @@
     <Resource Include="Icons\Redo.png" />
     <Resource Include="Icons\Undo.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Ornament.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
