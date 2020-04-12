@@ -52,8 +52,14 @@ namespace ShapePainter
         }
 
         public void RunCommand(ICanvasCommand command) {
+            if (history_pointer < history.Count)
+            {
+                history = history.GetRange(0, history_pointer);
+            }
             command.doCommand(this);
             history.Add(command);
+            ++history_pointer;
+
         }
 
 
@@ -347,26 +353,25 @@ namespace ShapePainter
         }
         public void Undo(object sender, EventArgs e)
         {
-            //watch history list
-            if (history.Count == 0 || history_pointer == 0)
-            {
-                var item = history[history_pointer];
-                item.undoCommand(this);
 
-                --history_pointer;
-            }
-            MessageBox.Show("undo");
+            if (history.Count == 0 || history_pointer == 0) return;
+
+            var item = history[history_pointer];
+            item.undoCommand(this);
+
+            --history_pointer;
+                
+            //MessageBox.Show("undo");
         }
         public void Redo(object sender, EventArgs e)
         {
-            if (history.Count == 0 || history_pointer == 0)
-            {
+            if (history.Count == 0 || history_pointer != 0) return;
                 //when first clicked undo the history pointer is less than 0 (-1)
+                //then it fails
                 var item = history[history_pointer];
                 item.doCommand(this);
 
                 ++history_pointer;
-            }
             MessageBox.Show("redo");
         }
         public void SelectRectangle(object sender, EventArgs e)
