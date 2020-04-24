@@ -7,5 +7,10 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace ShapePainter {
-    public partial class App : Application {}
+    public partial class App : Application {
+        protected override void OnStartup(StartupEventArgs e) {
+            this.MainWindow = ShapePainter.MainWindow.GetInstance();
+            this.MainWindow.Show();
+        }
+    }
 }

@@ -16,6 +16,8 @@ using System.Linq;
 namespace ShapePainter
 {
     public partial class MainWindow : Window {
+        private static MainWindow instance = new MainWindow();
+
         private enum MouseState { NONE, SELECTING, MOVING }
 
         public List<CanvasObject> objects { get; set; }
@@ -34,8 +36,7 @@ namespace ShapePainter
 
         private Dictionary<Key, bool> keyboard = new Dictionary<Key, bool>();
 
-
-        public MainWindow() {
+        private MainWindow() {
             InitializeComponent();
 
             this.objects = new List<CanvasObject>();
@@ -46,6 +47,11 @@ namespace ShapePainter
             };
 
             RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
+        }
+
+
+        public static MainWindow GetInstance() {
+            return instance;
         }
 
 
