@@ -347,24 +347,21 @@ namespace ShapePainter
             this.ClearSelection();
         }
 
-        public CanvasShape temp = new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse), Group.Global, new Vector(500, 500));
         public void Undo(object sender, EventArgs e)
         {
-            /*if (history_pointer == 0) return;
+            if (history_pointer == 0) return;
 
             var last = history[--history_pointer];
-            last.undoCommand(this);*/
-            AddObject(temp);
+            last.undoCommand(this);
         }
 
 
         public void Redo(object sender, EventArgs e)
         {
-             /* if (history_pointer == history.Count) return;
+             if (history_pointer == history.Count) return;
 
-              var next = history[history_pointer++];
-             next.doCommand(this);*/
-            RemoveObject(temp);
+             var next = history[history_pointer++];
+             next.doCommand(this);
         }
 
 
