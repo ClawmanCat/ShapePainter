@@ -69,6 +69,7 @@
     <Compile Include="Shapes\Canvas\Commands\ICanvasCommand.cs" />
     <Compile Include="Shapes\Canvas\Commands\MoveCommand.cs" />
     <Compile Include="Shapes\Canvas\Commands\SelectCommand.cs" />
+    <Compile Include="Shapes\Canvas\Decorator.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectGenericVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\CanvasObjectPrintVisitor.cs" />
     <Compile Include="Shapes\Canvas\Visitors\ICanvasObjectVisitor.cs" />

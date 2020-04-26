@@ -111,7 +111,7 @@
                                    />
                               </StackPanel>
                          </Button>
-                    <Button Click="AddOrnament">
+                    <Button Click="SelectOrnament">
                         <StackPanel Orientation="Horizontal">
                             <Image 
                                         Source="Icons/Ornament.png"

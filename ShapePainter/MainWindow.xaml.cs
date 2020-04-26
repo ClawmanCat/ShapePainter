@@ -37,6 +37,7 @@ namespace ShapePainter
 
         private bool rectangleButton = false;
         private bool ellipseButton = false;
+        private bool ornamentButton = false;
         public MainWindow() {
             InitializeComponent();
 
@@ -369,6 +370,7 @@ namespace ShapePainter
         {
             rectangleButton = true;
             ellipseButton = false;
+            ornamentButton = false;
         }
 
 
@@ -376,6 +378,7 @@ namespace ShapePainter
         {
             ellipseButton = true;
             rectangleButton = false;
+            ornamentButton = false;
         }
 
 
@@ -401,7 +404,31 @@ namespace ShapePainter
         }
 
 
-        public void AddOrnament(object sender, EventArgs e) {}
+        public void SelectOrnament(object sender, EventArgs e)
+        {
+            MessageBox.Show("selected ornament");
+            ornamentButton = true;
+            ellipseButton = false;
+            rectangleButton = false;
+
+        }
+        public void AddOrnament(object sender, EventArgs e)
+        {
+            Point mousepos = Mouse.GetPosition(Canvas);
+            MessageBox.Show("add ornament");
+
+            TextBox textBlock = new TextBox();
+            textBlock.Text = "The text contents of this TextBlock.";
+            textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+            textBlock.Arrange(new Rect(textBlock.DesiredSize));
+            textBlock.AcceptsReturn = false;
+            textBlock.TextWrapping = TextWrapping.Wrap;
+            textBlock.Background = Brushes.Red;
+
+            Canvas.SetLeft(textBlock, mousepos.X);
+            Canvas.SetTop(textBlock, mousepos.Y);
+            Canvas.Children.Add(textBlock);
+        }
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
             this.mouseDownPos = (Vector) args.GetPosition(Canvas);
@@ -441,6 +468,7 @@ namespace ShapePainter
                 //set buttons on false
                 ellipseButton = false;
                 rectangleButton = false;
+                ornamentButton = false;
             }
             else if(mouseState == MouseState.ADDING_SHAPE)
             {
@@ -451,6 +479,10 @@ namespace ShapePainter
                 else if (ellipseButton == true)
                 {
                     AddEllipse(sender, args);
+                }
+                else if(ornamentButton == true)
+                {
+                    AddOrnament(sender, args);
                 }
             }
         }
