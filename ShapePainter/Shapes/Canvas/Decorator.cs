@@ -13,7 +13,7 @@ namespace ShapePainter.Shapes.Canvas
         //get position which shape is close
         public static TextBox textbox(TextBox textBlock)
         {
-            textBlock.AppendText("Enter text");
+            //textBlock.AppendText("Enter text");
             textBlock.AcceptsReturn = false;
             textBlock.TextWrapping = TextWrapping.Wrap;
 

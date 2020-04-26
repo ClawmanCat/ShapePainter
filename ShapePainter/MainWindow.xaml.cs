@@ -39,6 +39,10 @@ namespace ShapePainter
         private bool rectangleButton = false;
         private bool ellipseButton = false;
         private bool ornamentButton = false;
+
+        TextBox textBlock;
+        String textwrite = "";
+
         public MainWindow() {
             InitializeComponent();
 
@@ -76,8 +80,14 @@ namespace ShapePainter
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => { },
                 (CanvasShape shape) => {
-                    Canvas.Children.Add(shape.shape);
-                    Canvas.Children.Add(shape.textBox); //have to add otherwise its null
+                    if (shape.shape != null)
+                    {
+                        Canvas.Children.Add(shape.shape);
+                    }
+                    else if (shape.textBox != null)
+                    {
+                        Canvas.Children.Add(shape.textBox); //have to add otherwise its null
+                    }
                     InvalidateObject(shape);
                 },
                 false
@@ -95,8 +105,14 @@ namespace ShapePainter
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => { },
                 (CanvasShape shape) => {
-                    Canvas.Children.Remove(shape.shape);
-                    Canvas.Children.Remove(shape.textBox);//have to add otherwise its null
+                    if (shape.shape != null)
+                    {
+                        Canvas.Children.Remove(shape.shape);
+                    }
+                    else if (shape.textBox != null)
+                    {
+                        Canvas.Children.Remove(shape.textBox);//have to add otherwise its null
+                    }
                 },
                 true
             );
@@ -124,11 +140,16 @@ namespace ShapePainter
             var visitor = new CanvasObjectGenericVisitor(
                 (Group group) => { },
                 (CanvasShape shape) => {
-                    Canvas.SetLeft(shape.shape, shape.position.X);
-                    Canvas.SetTop(shape.shape, shape.position.Y);
-
-                    Canvas.SetLeft(shape.textBox, shape.position.X); //have to add otherwise its null
-                    Canvas.SetTop(shape.textBox, shape.position.Y); //have to add otherwise its null
+                    if (shape.shape != null)
+                    {
+                        Canvas.SetLeft(shape.shape, shape.position.X);
+                        Canvas.SetTop(shape.shape, shape.position.Y);
+                    }
+                    else if (shape.textBox != null)
+                    {
+                        Canvas.SetLeft(shape.textBox, shape.position.X); //have to add otherwise its null
+                        Canvas.SetTop(shape.textBox, shape.position.Y); //have to add otherwise its null
+                    }
                 },
                 true
             );
@@ -420,8 +441,10 @@ namespace ShapePainter
         {
             Point mousepos = Mouse.GetPosition(Canvas);
 
-            TextBox textBlock = new TextBox();
+            textBlock = new TextBox();
             //Decorator.textbox(textBlock);
+
+            //ornamentTextChange(sender, e);
 
             RunCommand(new AddRemoveCommand(new CanvasShape(
               Decorator.textbox(textBlock),
@@ -433,7 +456,13 @@ namespace ShapePainter
             //Canvas.SetTop(textBlock, mousepos.Y);
             //Canvas.Children.Add(textBlock);
         }
+        private String ornamentTextChange(object sender, TextChangedEventArgs args)
+        {
+            textwrite += textBlock.Text;
 
+            MessageBox.Show("text input =" + textBlock.Text);
+            return textwrite;
+        }
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
             this.mouseDownPos = (Vector) args.GetPosition(Canvas);
             this.mousePrevPos = mouseDownPos;
