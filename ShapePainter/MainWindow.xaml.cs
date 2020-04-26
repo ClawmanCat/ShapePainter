@@ -43,23 +43,18 @@ namespace ShapePainter
             this.objects = new List<CanvasObject>();
             this.selection = new List<CanvasObject>();
 
-            List<CanvasObject> initial = new List<CanvasObject> {
-                Group.Global
-            };
-
-            RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
-
+            AddObject(Group.Global);
         }
 
         public void RunCommand(ICanvasCommand command) {
-            if (history_pointer < history.Count)
-            {
+            if (history_pointer < history.Count) {
                 history = history.GetRange(0, history_pointer);
             }
+
             command.doCommand(this);
             history.Add(command);
-            ++history_pointer;
 
+            ++history_pointer;
         }
 
 
@@ -351,39 +346,42 @@ namespace ShapePainter
             
             this.ClearSelection();
         }
+
+        public CanvasShape temp = new CanvasShape(CloneShape.Clone(PlatonicForms.Ellipse), Group.Global, new Vector(500, 500));
         public void Undo(object sender, EventArgs e)
         {
+            /*if (history_pointer == 0) return;
 
-            if (history.Count == 0 || history_pointer == 0) return;
-
-            var item = history[history_pointer];
-            item.undoCommand(this);
-
-            --history_pointer;
-                
-            //MessageBox.Show("undo");
+            var last = history[--history_pointer];
+            last.undoCommand(this);*/
+            AddObject(temp);
         }
+
+
         public void Redo(object sender, EventArgs e)
         {
-            if (history.Count == 0 || history_pointer != 0) return;
-                //when first clicked undo the history pointer is less than 0 (-1)
-                //then it fails
-                var item = history[history_pointer];
-                item.doCommand(this);
+             /* if (history_pointer == history.Count) return;
 
-                ++history_pointer;
-            MessageBox.Show("redo");
+              var next = history[history_pointer++];
+             next.doCommand(this);*/
+            RemoveObject(temp);
         }
+
+
         public void SelectRectangle(object sender, EventArgs e)
         {
             rectangleButton = true;
             ellipseButton = false;
         }
+
+
         public void SelectEllipse(object sender, EventArgs e)
         {
             ellipseButton = true;
             rectangleButton = false;
         }
+
+
         public void AddEllipse(object sender, MouseEventArgs e) {
             Point mousepos = Mouse.GetPosition(Canvas);
 
@@ -393,6 +391,8 @@ namespace ShapePainter
             new Vector(mousepos.X, mousepos.Y)
             ), AddRemoveCommand.Mode.ADD));
         } 
+
+
         public void AddRectangle(object sender, MouseEventArgs e) {
             Point mousepos = Mouse.GetPosition(Canvas);
 
@@ -402,6 +402,8 @@ namespace ShapePainter
               new Vector(mousepos.X, mousepos.Y)
               ), AddRemoveCommand.Mode.ADD));
         }
+
+
         public void AddOrnament(object sender, EventArgs e) {}
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
