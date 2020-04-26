@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ShapePainter.Shapes.Canvas.Visitors;
 using System.Linq;
+using Decorator = ShapePainter.Shapes.Canvas.Decorator;
 
 namespace ShapePainter
 {
@@ -76,6 +77,7 @@ namespace ShapePainter
                 (Group group) => { },
                 (CanvasShape shape) => {
                     Canvas.Children.Add(shape.shape);
+                    Canvas.Children.Add(shape.textBox); //have to add otherwise its null
                     InvalidateObject(shape);
                 },
                 false
@@ -94,6 +96,7 @@ namespace ShapePainter
                 (Group group) => { },
                 (CanvasShape shape) => {
                     Canvas.Children.Remove(shape.shape);
+                    Canvas.Children.Remove(shape.textBox);//have to add otherwise its null
                 },
                 true
             );
@@ -123,6 +126,9 @@ namespace ShapePainter
                 (CanvasShape shape) => {
                     Canvas.SetLeft(shape.shape, shape.position.X);
                     Canvas.SetTop(shape.shape, shape.position.Y);
+
+                    Canvas.SetLeft(shape.textBox, shape.position.X); //have to add otherwise its null
+                    Canvas.SetTop(shape.textBox, shape.position.Y); //have to add otherwise its null
                 },
                 true
             );
@@ -277,7 +283,6 @@ namespace ShapePainter
                     string json = r.ReadToEnd();
 
                     long fileLength = CountLinesJSON(r, openfileDialog.FileName);
-                    //while?
                     for (int index = 0; index < fileLength - 3; index++)
                     {
 
@@ -406,7 +411,6 @@ namespace ShapePainter
 
         public void SelectOrnament(object sender, EventArgs e)
         {
-            MessageBox.Show("selected ornament");
             ornamentButton = true;
             ellipseButton = false;
             rectangleButton = false;
@@ -415,19 +419,19 @@ namespace ShapePainter
         public void AddOrnament(object sender, EventArgs e)
         {
             Point mousepos = Mouse.GetPosition(Canvas);
-            MessageBox.Show("add ornament");
 
             TextBox textBlock = new TextBox();
-            textBlock.Text = "The text contents of this TextBlock.";
-            textBlock.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-            textBlock.Arrange(new Rect(textBlock.DesiredSize));
-            textBlock.AcceptsReturn = false;
-            textBlock.TextWrapping = TextWrapping.Wrap;
-            textBlock.Background = Brushes.Red;
+            //Decorator.textbox(textBlock);
 
-            Canvas.SetLeft(textBlock, mousepos.X);
-            Canvas.SetTop(textBlock, mousepos.Y);
-            Canvas.Children.Add(textBlock);
+            RunCommand(new AddRemoveCommand(new CanvasShape(
+              Decorator.textbox(textBlock),
+              Group.Global,
+              new Vector(mousepos.X, mousepos.Y)
+              ), AddRemoveCommand.Mode.ADD));
+
+            //Canvas.SetLeft(textBlock, mousepos.X);
+            //Canvas.SetTop(textBlock, mousepos.Y);
+            //Canvas.Children.Add(textBlock);
         }
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
@@ -483,6 +487,7 @@ namespace ShapePainter
                 else if(ornamentButton == true)
                 {
                     AddOrnament(sender, args);
+                    ornamentButton = false;
                 }
             }
         }

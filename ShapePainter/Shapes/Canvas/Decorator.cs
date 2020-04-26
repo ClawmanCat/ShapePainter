@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ShapePainter.Shapes.Canvas
 {
     public class Decorator
     {
         //get position which shape is close
-        //spawn textbox
+        public static TextBox textbox(TextBox textBlock)
+        {
+            textBlock.AppendText("Enter text");
+            textBlock.AcceptsReturn = false;
+            textBlock.TextWrapping = TextWrapping.Wrap;
 
+            return textBlock;
+        }
     }
 }
