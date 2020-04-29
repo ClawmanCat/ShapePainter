@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ShapePainter.Properties
+namespace ShapePainter_Refactor.Properties
 {
 
 
@@ -19,8 +19,10 @@ namespace ShapePainter.Properties
 
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
 
-        public static Settings Default {
-            get {
+        public static Settings Default
+        {
+            get
+            {
                 return defaultInstance;
             }
         }
