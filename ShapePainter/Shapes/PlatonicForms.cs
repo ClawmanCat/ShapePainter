@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +25,7 @@ namespace ShapePainter.Shapes {
             clone.Width = shape.Width;
             clone.HorizontalAlignment = shape.HorizontalAlignment;
             clone.VerticalAlignment = shape.VerticalAlignment;
+            clone.Tag = shape.Tag;
 
             return clone;
         }
@@ -35,7 +38,8 @@ namespace ShapePainter.Shapes {
             Height = 50,
             Width = 50,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center,
+            Tag = "BasicEllipse"
         };
 
 
@@ -46,7 +50,8 @@ namespace ShapePainter.Shapes {
             Height = 50,
             Width = 50,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center,
+            Tag = "BasicRectangle"
         };
 
 
@@ -57,7 +62,8 @@ namespace ShapePainter.Shapes {
             Height = 1,
             Width = 1,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center,
+            Tag = "SelectionRectangle"
         };
     }
 }

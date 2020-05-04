@@ -1,44 +1,21 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using ShapePainter.Shapes;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.Unicode;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace ShapePainter.Utility
-{
+namespace ShapePainter.Utility {
+    using WPFShape = System.Windows.Shapes.Shape;
+
     public static class Serializer {
-        private static JavaScriptEncoder GetEncoder() {
-            TextEncoderSettings settings = new TextEncoderSettings();
-            settings.AllowRange(UnicodeRanges.All);
-
-            return JavaScriptEncoder.Create(settings);
-        }
-
-
-        public class CanvasObjectSerializer : JsonConverter<ICanvasObject> {
-            public override ICanvasObject Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options) {
-                reader.Read();
-                string s = reader.GetString();
-                
-                bool is_group = reader.TokenType == JsonTokenType.PropertyName && s == "name";
-
-                if (is_group) return JsonSerializer.Deserialize<Group>(ref reader, options);
-                else return JsonSerializer.Deserialize<Shape>(ref reader, options);
-            }
-
-            public override void Write(Utf8JsonWriter writer, ICanvasObject value, JsonSerializerOptions options) {
-                if (value is Group) writer.WriteStringValue(JsonSerializer.Serialize((Group) value, options));
-                else writer.WriteStringValue(JsonSerializer.Serialize((Shape) value, options));
-            }
-        }
-
-
         public static void SaveBitmap() {
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = "JPEG Image (*.jpg, *.jpeg)|*.jpg;*.jpeg| PNG Image (*.png)|*.png";
@@ -62,9 +39,10 @@ namespace ShapePainter.Utility
             dialog.Filter = "JSON-Formatted Data (*json)|*.json";
 
             if (dialog.ShowDialog() ?? false) {
-                string json = JsonSerializer.Serialize<ICanvasObject>(
+                string json = JsonConvert.SerializeObject(
                     MainWindow.instance.base_node, 
-                    new JsonSerializerOptions { WriteIndented = true, Encoder = GetEncoder() }
+                    Formatting.Indented,
+                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }
                 );
 
                 File.WriteAllText(dialog.FileName, json, Encoding.UTF8);
@@ -77,12 +55,21 @@ namespace ShapePainter.Utility
             dialog.Filter = "JSON-Formatted Data (*json)|*.json";
 
             if (dialog.ShowDialog() ?? false) {
-                MainWindow.instance.base_node = (Group) JsonSerializer.Deserialize(
-                    File.ReadAllText(dialog.FileName, Encoding.UTF8), 
-                    typeof(ICanvasObject), 
-                    new JsonSerializerOptions { Encoder = GetEncoder() }
+                MainWindow.instance.Reset();
+
+                MainWindow.instance.base_node = JsonConvert.DeserializeObject<Group>(
+                    File.ReadAllText(dialog.FileName),
+                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto }
                 );
+
+                MainWindow.instance.base_node.revalidate();
+                MainWindow.instance.AddCanvasObject(MainWindow.instance.base_node);
             }
         }
+
+
+        public static Dictionary<string, WPFShape> ShapeDictionary = typeof(PlatonicForms).GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(x => x.FieldType.IsSubclassOf(typeof(WPFShape)))
+            .ToDictionary(x => x.FieldType.Name, x => (WPFShape) x.GetValue(null));
     }
 }

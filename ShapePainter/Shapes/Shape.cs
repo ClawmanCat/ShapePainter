@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Timers;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows.Shapes;
+using Newtonsoft.Json;
+using System.Reflection;
+using ShapePainter.Utility;
 
 namespace ShapePainter.Shapes {
     using WPFShape = System.Windows.Shapes.Shape;
@@ -32,15 +33,6 @@ namespace ShapePainter.Shapes {
             }
         }
 
-        // For serialization
-        public string shape_name {
-            get { return shape is Ellipse ? "ellipse" : "rectangle"; }
-            set {
-                shape = (value == "ellipse")
-                    ? PlatonicForms.BasicEllipse.Clone()
-                    : PlatonicForms.BasicRectangle.Clone();
-            }
-        }
 
         private Vector backing_position;
         [JsonIgnore] public Vector position {
@@ -50,10 +42,6 @@ namespace ShapePainter.Shapes {
                 MainWindow.instance.InvalidateIfHas(this);
             }
         }
-
-        // For serialization
-        public double x { get { return position.X; } set { position = new Vector(value, position.Y); } }
-        public double y { get { return position.Y; } set { position = new Vector(position.X, value); } }
 
 
         private bool backing_selected;
@@ -91,14 +79,13 @@ namespace ShapePainter.Shapes {
             }
         }
 
+
         // Size must be positive, use Reshape if negative values are used to indicate the direction of the shape has changed.
         [JsonIgnore] public Vector size {
             get {
                 return new Vector(shape.Width, shape.Height);
             }
             set {
-                Debug.Assert(value.X >= 0 && value.Y >= 0, "Negative value passed to Shape.size.");
-
                 shape.Width = value.X;
                 shape.Height = value.Y;
 
@@ -106,14 +93,34 @@ namespace ShapePainter.Shapes {
             }
         }
 
+
         // For serialization
-        public double w { get { return size.X; } set { size = new Vector(value, size.Y); } }
-        public double h { get { return size.Y; } set { size = new Vector(size.X, value); } }
+        [JsonProperty(Order = 1)] public string shape_class {
+            get { return (string) shape.Tag; }
+            set {
+                shape = typeof(PlatonicForms).GetFields(BindingFlags.Public | BindingFlags.Static)
+                    .Select(x => x.GetValue(null))
+                    .Where (x => x is WPFShape)
+                    .Select(x => x as WPFShape)
+                    .Where (x => value == x.Tag as string)
+                    .First()
+                    .Clone();
+            }
+        }
+
+        [JsonProperty(Order = 2)] public double x { get { return position.X; } set { position = new Vector(value, position.Y); } }
+        [JsonProperty(Order = 2)] public double y { get { return position.Y; } set { position = new Vector(position.X, value); } }
+        [JsonProperty(Order = 2)] public double w { get { return size.X; } set { size = new Vector(value, size.Y); } }
+        [JsonProperty(Order = 2)] public double h { get { return size.Y; } set { size = new Vector(size.X, value); } }
 
 
-        // A shape is real if it is actually a part of the canvas and not something like a selection rectangle.
-        [JsonIgnore] public bool real { get; private set; }
+        // A shape is real if it is actually a part of the canvas and not something like the selection rectangle.
+        [JsonIgnore] public bool real { get; private set; } = true;
         #endregion Properties
+
+
+        // For deserialization
+        public Shape() : base() { }
 
 
         public Shape(ICanvasObject parent, WPFShape shape, Vector position, bool real = true) : base(parent) {

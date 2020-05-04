@@ -13,7 +13,7 @@ namespace ShapePainter {
             base.OnStartup(e);
 
             this.MainWindow = ShapePainter.MainWindow.instance;
-            ShapePainter.MainWindow.instance.Init();
+            ShapePainter.MainWindow.instance.Reset();
 
             this.MainWindow.Show();
         }

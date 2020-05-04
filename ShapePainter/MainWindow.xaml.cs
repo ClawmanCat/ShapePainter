@@ -52,7 +52,7 @@ namespace ShapePainter {
 
 
         // Resets the object to its default state.
-        public void Init() {
+        public void Reset() {
             if (objects.Count > 0) DoCommand(new ClearCommand(objects));
 
             MainWindow tmp = new MainWindow(false);
@@ -133,11 +133,12 @@ namespace ShapePainter {
 
 
         public void AddCanvasObject(ICanvasObject obj) {
-            objects.Add(obj);
-
             var visitor = new GenericVisitor(
-                (Group group) => { },
+                (Group group) => {
+                    this.objects.Add(group);
+                },
                 (Shape shape) => {
+                    this.objects.Add(shape);
                     this.Canvas.Children.Add(shape.shape);
 
                     Canvas.SetLeft(shape.shape, shape.position.X);
@@ -246,12 +247,11 @@ namespace ShapePainter {
 
 
         private void OnNewButtonClicked(object sender, EventArgs e) {
-            Init();
+            Reset();
         }
 
 
         private void OnOpenButtonClicked(object sender, EventArgs e) {
-            Init();
             Serializer.LoadJSON();
         }
 

@@ -11,6 +11,10 @@ namespace ShapePainter.Shapes {
         public string name { get; private set; }
 
         
+        // For deserialization
+        public Group() : base() { }
+
+
         public Group(string name, ICanvasObject parent, params ICanvasObject[] children) : base(parent, children) {
             this.name = name;
         }
