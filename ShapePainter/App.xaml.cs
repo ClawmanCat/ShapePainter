@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShapePainter.Shapes;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -9,7 +10,11 @@ using System.Windows;
 namespace ShapePainter {
     public partial class App : Application {
         protected override void OnStartup(StartupEventArgs e) {
-            this.MainWindow = ShapePainter.MainWindow.GetInstance();
+            base.OnStartup(e);
+
+            this.MainWindow = ShapePainter.MainWindow.instance;
+            ShapePainter.MainWindow.instance.Reset();
+
             this.MainWindow.Show();
         }
     }

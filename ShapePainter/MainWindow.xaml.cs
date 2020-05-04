@@ -1,131 +1,146 @@
-﻿using ShapePainter.Shapes;
-using ShapePainter.Shapes.Canvas;
-using Microsoft.Win32;
+﻿using ShapePainter.Command;
+using ShapePainter.Shapes;
+using ShapePainter.Strategy;
+using ShapePainter.Utility;
+using ShapePainter.Visitor;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Path = System.IO.Path;
-using System.Windows.Controls;
-using System.Windows.Input;
-using ShapePainter.Shapes.Canvas.Visitors;
-using System.Linq;
+using System.Windows.Navigation;
 
-namespace ShapePainter
-{
+namespace ShapePainter {
     public partial class MainWindow : Window {
-        private static MainWindow instance = new MainWindow();
+        // Singleton Object
+        public static MainWindow instance { get; } = new MainWindow();
 
-        private enum MouseState { NONE, SELECTING, MOVING }
+        #region ClassMembers
+        [Resetable] private IClickStrategy click_strategy = new ClickStrategyIdle();
+        [Resetable] private Vector mouse_down_pos = new Vector(0, 0);
 
-        public List<CanvasObject> objects { get; set; }
-        public List<CanvasObject> selection { get; set; }
+        [Resetable] public Group base_node { get; set; } = null;
 
-        private List<ICanvasCommand> history = new List<ICanvasCommand>();
+        [Resetable] public Shape selection_rectangle { get; private set; } = null;
+        [Resetable] private List<ICanvasObject> selection = new List<ICanvasObject>();
 
-        private MouseState mouseState;
-        private Vector? mouseDownPos = null, mousePrevPos = null;
-        private CanvasShape selectionRectangle = null;
+        [Resetable] private List<ICanvasObject> objects = new List<ICanvasObject>();
 
-        // While we update the screen every time the mouse is moved, we only want to record the begin- and endstates
-        // in the history.
-        // To achieve this we keep a temporary command to record the begin and endstates in.
-        ICanvasCommand recording;
+        [Resetable] private List<ICanvasCommand> history = new List<ICanvasCommand>();
+        [Resetable] private int history_pointer = 0;
 
-        private Dictionary<Key, bool> keyboard = new Dictionary<Key, bool>();
+        [Resetable] private HashSet<Key> keyboard = new HashSet<Key>();
 
-        private MainWindow() {
+        private bool exit_on_close;
+        #endregion ClassMembers
+
+
+        private MainWindow(bool exit_on_close = true) {
             InitializeComponent();
 
-            this.objects = new List<CanvasObject>();
-            this.selection = new List<CanvasObject>();
-
-            List<CanvasObject> initial = new List<CanvasObject> {
-                Group.Global
-            };
-
-            RunCommand(new CompoundCommand(initial.Select((CanvasObject o) => new AddRemoveCommand(o, AddRemoveCommand.Mode.ADD))));
+            this.exit_on_close = exit_on_close;
         }
 
 
-        public static MainWindow GetInstance() {
-            return instance;
-        }
+        // Resets the object to its default state.
+        public void Reset() {
+            if (objects.Count > 0) DoCommand(new ClearCommand(objects));
 
+            MainWindow tmp = new MainWindow(false);
 
-        public void RunCommand(ICanvasCommand command) {
-            command.doCommand(this);
-            history.Add(command);
-        }
+            List<MemberInfo> fields = new List<MemberInfo>();
+            fields.AddRange(this.GetType().GetRuntimeProperties().Cast<MemberInfo>());
+            fields.AddRange(this.GetType().GetRuntimeFields().Cast<MemberInfo>());
 
-
-        public bool IsKeyDown(Key k) {
-            return keyboard.ContainsKey(k) && keyboard[k];
-        }
-
-
-        private void SetKeyDown(Key k, bool down) {
-            keyboard[k] = down;
-        }
-
-
-        public void AddObject(CanvasObject obj) {
-            this.objects.Add(obj);
-
-            var visitor = new CanvasObjectGenericVisitor(
-                (Group group) => { },
-                (CanvasShape shape) => {
-                    Canvas.Children.Add(shape.shape);
-                    InvalidateObject(shape);
-                },
-                false
-            );
-
-            obj.accept(visitor);
-            Invalidate();
-        }
-
-
-        public void RemoveObject(CanvasObject obj) {
-            this.objects.Remove(obj);
-            this.selection.Remove(obj);
-
-            var visitor = new CanvasObjectGenericVisitor(
-                (Group group) => { },
-                (CanvasShape shape) => {
-                    Canvas.Children.Remove(shape.shape);
-                },
-                true
-            );
-
-            obj.accept(visitor);
-            Invalidate();
-        }
-
-
-
-
-        public List<CanvasObject> GetSelectedObjects() {
-            List<CanvasObject> result = new List<CanvasObject>();
-
-            foreach (CanvasObject o in objects) {
-                if (selection.Any((CanvasObject s) => o.ancestor(s, true))) result.Add(o);
+            foreach (var field in fields) {
+                if (!Attribute.IsDefined(field, typeof(Resetable))) continue;
+                field.SetValue(this, field.GetValue(tmp));
             }
 
-            return result;
-        }
-        private void Invalidate()
-        {
-            this.InvalidateVisual();
+            this.base_node = new Group("Canvas", null);
+            this.selection_rectangle = new Shape(null, PlatonicForms.SelectionRectangle.Clone(), new Vector(0, 0), false);
+
+            this.EllipseButton.IsChecked = false;
+            this.RectangleButton.IsChecked = false;
         }
 
-        public void InvalidateObject(CanvasObject obj)
-        {
-            var visitor = new CanvasObjectGenericVisitor(
-                (Group group) => { },
-                (CanvasShape shape) => {
+
+        #region DoUndoRedo
+        public void DoCommand(ICanvasCommand command, bool record = true) {
+            if (record && history_pointer < history.Count) {
+                history = history.GetRange(0, history_pointer);
+            }
+
+            command.doCommand(this);
+
+            if (record) {
+                history.Add(command);
+                ++history_pointer;
+            }
+        }
+
+
+        public void UndoCommand() {
+            if (history_pointer < 1) return;
+
+            var last = history[--history_pointer];
+            last.undoCommand(this);
+        }
+
+
+        public void RedoCommand() {
+            if (history_pointer >= history.Count) return;
+
+            var next = history[history_pointer++];
+            next.doCommand(this);
+        }
+        #endregion DoUndoRedo
+
+
+        #region ObjectHandlers
+         public void Invalidate() {
+            foreach(var obj in objects) {
+                var visitor = new GenericVisitor(
+                    (Group group) => { },
+                    (Shape shape) => {
+                        Canvas.SetLeft(shape.shape, shape.position.X);
+                        Canvas.SetTop(shape.shape, shape.position.Y);
+                    },
+                    false
+                );
+
+                obj.accept(visitor);
+            }
+
+            this.Canvas.InvalidateVisual();
+            this.Canvas.InvalidateArrange();
+            this.Canvas.InvalidateMeasure();
+        }
+
+
+        public void InvalidateIfHas(ICanvasObject obj) {
+            if (HasCanvasObject(obj)) Invalidate();
+        }
+
+
+        public void AddCanvasObject(ICanvasObject obj) {
+            var visitor = new GenericVisitor(
+                (Group group) => {
+                    this.objects.Add(group);
+                },
+                (Shape shape) => {
+                    this.objects.Add(shape);
+                    this.Canvas.Children.Add(shape.shape);
+
                     Canvas.SetLeft(shape.shape, shape.position.X);
                     Canvas.SetTop(shape.shape, shape.position.Y);
                 },
@@ -135,323 +150,199 @@ namespace ShapePainter
             obj.accept(visitor);
             Invalidate();
         }
-        public void SelectRegion(Vector a, Vector b, bool overwrite = true)
-        {
-            List<CanvasObject> result = new List<CanvasObject>();
-
-            Vector min = new Vector(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y));
-            Vector max = new Vector(Math.Max(a.X, b.X), Math.Max(a.Y, b.Y));
-
-            foreach (CanvasObject o in objects)
-            {
-                if (
-                    o.position.X >= min.X && o.position.X < max.X &&
-                    o.position.Y >= min.Y && o.position.Y < max.Y
-                ) result.Add(o);
-            }
-
-            SelectObjects(result, overwrite);
-        }
 
 
-        #region Selection
-        public void SelectObjects(IEnumerable<CanvasObject> objects, bool overwrite = true)
-        {
-            selection.Remove(selectionRectangle);   // Can't select the selection rectangle.
+        public void RemoveCanvasObject(ICanvasObject obj) {
+            objects.Remove(obj);
 
-            if (overwrite) ClearSelection();
-
-            var visitor = new CanvasObjectGenericVisitor(
+            var visitor = new GenericVisitor(
                 (Group group) => { },
-                (CanvasShape shape) => { shape.selected = true; },
+                (Shape shape) => {
+                    this.Canvas.Children.Remove(shape.shape);
+                },
                 true
             );
 
-            foreach (CanvasObject o in objects) o.accept(visitor);
-
-            selection.AddRange(objects);
+            obj.accept(visitor);
+            Invalidate();
         }
 
-        public void New(object sender, EventArgs e)
-        {
+
+        public bool HasCanvasObject(ICanvasObject obj) {
+            return this.objects.Contains(obj);
         }
-        private void Save(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                Rect rect = new Rect(Canvas.RenderSize);
 
-                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96d, 96d, PixelFormats.Pbgra32);
 
-                Canvas.Measure(new Size((int)Canvas.Width, (int)Canvas.Height));
-                Canvas.Arrange(new Rect(new Size((int)Canvas.Width, (int)Canvas.Height)));
+        public void SetSelected(ICanvasObject obj, bool selected) {
+            if (obj is Shape && !((Shape) obj).real) return;
 
-                renderTargetBitmap.Render(Canvas);
+            Action<ICanvasObject> set_selection = (ICanvasObject x) => {
+                if (selected) selection.Add(x);
+                else selection.Remove(x);
+            };
 
-                string fileName = saveFileDialog.FileName;
-                var fileExtension = Path.GetExtension(saveFileDialog.FileName);
-                switch (fileExtension.ToLower())
-                {
-                    case ".json":
-                        SaveToJSON(renderTargetBitmap, fileName);
-                        break;
-                    case ".jpg":
-                        SaveToJPG(renderTargetBitmap, fileName);
-                        break;
-                    case ".png":  
-                        SaveToPNG(renderTargetBitmap, fileName);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(fileExtension);
-                }
-            }
+            var visitor = new GenericVisitor(
+                (Group group) => {
+                    set_selection(group);
+                },
+                (Shape shape) => {
+                    shape.selected = selected;
+                    set_selection(shape);
+                },
+                true
+            );
+
+            obj.accept(visitor);
         }
-        public void SaveToJSON(RenderTargetBitmap renderTargetBitmap, string fileName)
-        {
-            CanvasObjectPrintVisitor v = new CanvasObjectPrintVisitor();
-            Group.Global.accept(v);
-            String textToPrint = v.getJSON();
-            MessageBox.Show(textToPrint);
 
-            File.WriteAllText(fileName, textToPrint);
+
+        public void SetSelected(IEnumerable<ICanvasObject> objs, bool selected) {
+            foreach (var obj in objs) SetSelected(obj, selected);
         }
-        public void SaveToJPG(RenderTargetBitmap renderTargetBitmap, string fileName)
-        {
-            JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder();
-            jpgEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
 
-            using (FileStream file = File.Create(fileName))
-            {
-                jpgEncoder.Save(file);
-            }
-        }
-        public void SaveToPNG(RenderTargetBitmap renderTargetBitmap, string fileName)
-        {
-            PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
-            pngEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
 
-            using (FileStream file = File.Create(fileName))
-            {
-                pngEncoder.Save(file);
-            }
-        }
-        public void Open(object sender, EventArgs e)
-        {
-
-            OpenFileDialog openfileDialog = new OpenFileDialog();
-
-            openfileDialog.Title = "Select a file";
-            openfileDialog.Filter = "Json file(*json)|*.json| JPG file (*.jpg)|*.jpg| PNG file(*.png)|*.png";
-            if (openfileDialog.ShowDialog() == true)
-            {
-                var filextension = Path.GetExtension(openfileDialog.FileName);
-
-                switch (filextension.ToLower())
-                {
-                    case ".json":
-                        OpenJSON(openfileDialog);
-                        break;
-                    case ".jpg":
-                        OpenJPG(openfileDialog);
-                        break;
-                    case ".png":
-                        OpenPNG(openfileDialog);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(filextension);
-                }
-            }
-        }
-        public static long CountLinesJSON(StreamReader r, string f)
-        {
-            long count = 0;
-            using (r = new StreamReader(f))
-            {
-                string line;
-                while ((line = r.ReadLine()) != null)
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-        public void OpenJSON(OpenFileDialog openfileDialog)
-        {
-            if (openfileDialog.FileName.Trim() != string.Empty)
-            {
-                using (StreamReader r = new StreamReader(openfileDialog.FileName))
-                {
-                    string json = r.ReadToEnd();
-
-                    long fileLength = CountLinesJSON(r, openfileDialog.FileName);
-                    //while?
-                    for (int index = 0; index < fileLength - 3; index++)
-                    {
-
-                        var searchShape = json.Split('[')[1];
-                        var foundShape = searchShape.Split(',')[index];
-                        string[] shapeThing = foundShape.Split(' ');/*gives shape string*/
-
-                        int x = Convert.ToInt32(shapeThing[1]);
-                        int y = Convert.ToInt32(shapeThing[2]);
-
-                        string pattern = "[':]";
-                        string replacement = "";
-                        System.Text.RegularExpressions.Regex rgx = new System.Text.RegularExpressions.Regex(pattern);
-                        string shapename = rgx.Replace(shapeThing[0], replacement);
-
-                        if (shapename.Contains("Ellipse"))
-                        {
-                            AddObject(new CanvasShape(
-                                CloneShape.Clone(PlatonicForms.Ellipse),
-                                Group.Global,
-                                new Vector(x, y)
-                            ));
-                        }
-                        else if(shapename.Contains("Rectangle"))
-                        {
-                            AddObject(new CanvasShape(
-                               CloneShape.Clone(PlatonicForms.Rectangle),
-                               Group.Global,
-                               new Vector(x,y)
-                           ));
-                        }
-                    }
-                }
-            }
-        }
-        public void OpenPNG(OpenFileDialog openfileDialog)
-        {
-            var pngPath = openfileDialog.FileName;
-            Canvas.Background = new ImageBrush(new BitmapImage(new Uri(pngPath)));
-        }
-        public void OpenJPG(OpenFileDialog openfileDialog)
-        {
-            var jpgPath = openfileDialog.FileName;
-            Canvas.Background = new ImageBrush(new BitmapImage(new Uri(jpgPath)));
+        public void SetSelected(Vector a, Vector b, bool selected) {
+            var items = this.objects.Where(x => x is Shape && ((Shape) x).position.InBox(a, b));
+            SetSelected(items, selected);
         }
 
 
         public void ClearSelection() {
-            var visitor = new CanvasObjectGenericVisitor(
-                (Group group) => { },
-                (CanvasShape shape) => { shape.selected = false; },
-                true
+            while (selection.Count > 0) SetSelected(selection[0], false);
+        }
+        #endregion ObjectHandlers
+
+
+        #region PageHandlers
+        private void OnKeyDown(object sender, KeyEventArgs e) {
+            keyboard.Add(e.SystemKey == Key.None ? e.Key : e.SystemKey);
+
+            if (e.Key == Key.Escape) ClearSelection();
+        }
+
+
+        private void OnKeyUp(object sender, KeyEventArgs e) {
+            keyboard.Remove(e.SystemKey == Key.None ? e.Key : e.SystemKey);
+        }
+
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs args) {
+            Vector mousepos = (Vector) Mouse.GetPosition(this.Canvas);
+
+            this.mouse_down_pos = mousepos;
+            click_strategy.OnMouseDown(mousepos);
+        }
+
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs args) { 
+            var mousepos = (Vector) Mouse.GetPosition(this.Canvas);
+            click_strategy.OnMouseUp(mouse_down_pos, mousepos);
+        }
+
+
+        private void OnMouseMoved(object sender, MouseEventArgs args) { 
+            var mousepos = (Vector) Mouse.GetPosition(this.Canvas);
+            click_strategy.OnMouseMoved(mouse_down_pos, mousepos);
+        }
+
+
+        private void OnNewButtonClicked(object sender, EventArgs e) {
+            Reset();
+        }
+
+
+        private void OnOpenButtonClicked(object sender, EventArgs e) {
+            Serializer.LoadJSON();
+        }
+
+
+        private void OnSaveButtonClicked(object sender, EventArgs e) {
+            var result = WPFCustomMessageBox.CustomMessageBox.ShowYesNo(
+                "Do you wish to save the current canvas as JSON data or export it to an image?",
+                "Save to JSON or image?",
+                "JSON",
+                "Image",
+                MessageBoxImage.Question
             );
 
-            foreach (CanvasObject o in selection) o.accept(visitor);
-
-            this.selection.Clear();
+            if (result == MessageBoxResult.Yes) Serializer.SaveJSON();
+            else Serializer.SaveBitmap();
         }
-        public IReadOnlyList<CanvasObject> GetSelection() {
+        
+        
+        private void OnClearButtonClicked(object sender, EventArgs e) {
+            DoCommand(new ClearCommand(objects));
+        }
+
+
+        private void OnUndoButtonClicked(object sender, EventArgs e) {
+            UndoCommand();
+        }
+
+
+        private void OnRedoButtonClicked(object sender, EventArgs e) {
+            RedoCommand();
+        }
+
+
+        private void OnEllipseButtonClicked(object sender, EventArgs e) {
+            RectangleButton.IsChecked = false;
+
+            if (EllipseButton.IsChecked ?? false) SetClickStrategy(new ClickStrategyAdd(PlatonicForms.BasicEllipse));
+            else SetClickStrategy(new ClickStrategyIdle());
+        }
+
+
+        private void OnRectangleButtonClicked(object sender, EventArgs e) {
+            EllipseButton.IsChecked = false;
+
+            if (RectangleButton.IsChecked ?? false) SetClickStrategy(new ClickStrategyAdd(PlatonicForms.BasicRectangle));
+            else SetClickStrategy(new ClickStrategyIdle());
+        }
+
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            if (exit_on_close) Application.Current.Shutdown();
+        }
+        #endregion PageHandlers
+
+
+        #region Interface
+        public bool IsKeyPressed(Key key) {
+            return keyboard.Contains(key);
+        }
+
+
+        public void SetClickStrategy(IClickStrategy strategy) {
+            this.click_strategy = strategy;
+        }
+
+
+        public IReadOnlyList<ICanvasObject> GetSelection() {
             return selection;
         }
-        #endregion Selection
-        #region PageHandlers
-        public void ClearCanvas(object sender = null, EventArgs args = null) {
-            foreach (var o in objects) RemoveObject(o);
-            this.objects.Clear();
-            
-            this.ClearSelection();
-        }
 
-        public void AddEllipse(object sender, EventArgs e) { }
-        public void AddRectangle(object sender, EventArgs e) { }
-        public void AddOrnament(object sender, EventArgs e) { }
 
-        private void HandleMouseDown(object sender, MouseButtonEventArgs args) {
-            this.mouseDownPos = (Vector) args.GetPosition(Canvas);
-            this.mousePrevPos = mouseDownPos;
-
-            // Drag to select, Shift + drag to move selection.
-            mouseState = (IsKeyDown(Key.LeftShift) || IsKeyDown(Key.RightShift)) ? MouseState.MOVING : MouseState.SELECTING;
-
-            // If selecting, create the selection rectangle.
-            if (mouseState == MouseState.SELECTING) {
-                this.selectionRectangle = new CanvasShape(
-                    CloneShape.Clone(PlatonicForms.SelectionRectangle),
-                    Group.Global,
-                    mouseDownPos.Value
-                );
-
-                AddObject(this.selectionRectangle);
-
-                recording = new SelectCommand();
-                ((SelectCommand) recording).RecordStart(selection);
-            } else if (mouseState == MouseState.MOVING) {
-                recording = new MoveCommand();
-                ((MoveCommand) recording).RecordStart(selection);
-            }
+        public void ClearAddButtonStates() {
+            this.EllipseButton.IsChecked = false;
+            this.RectangleButton.IsChecked = false;
         }
 
 
-        private void HandleMouseUp(object sender, MouseButtonEventArgs args) {
-            if (mouseState == MouseState.SELECTING) {
-                RemoveObject(selectionRectangle);
-                this.selectionRectangle = null;
+        public RenderTargetBitmap ToBitmap() {
+            var bitmap = new RenderTargetBitmap(
+                (int) Canvas.RenderSize.Width, 
+                (int) Canvas.RenderSize.Height, 
+                100, 
+                100, 
+                PixelFormats.Pbgra32
+            );
 
-                ((SelectCommand) recording).RecordEnd(selection);
-            } else if (mouseState == MouseState.MOVING) {
-                ((MoveCommand) recording).RecordEnd(selection);
-            }
+            bitmap.Render(this.Canvas);
 
-            this.mouseState = MouseState.NONE;
-            this.mouseDownPos = null;
-            this.mousePrevPos = null;
-
-            if (recording != null) {
-                history.Add(recording);
-                recording = null;
-            }
+            return bitmap;
         }
-
-
-        private void HandleMouseMove(object sender, MouseEventArgs args) {
-            if (mouseState == MouseState.NONE) return;
-
-            Vector mousePos = (Vector) args.GetPosition(Canvas);
-            Vector delta = mousePos - mousePrevPos.Value;
-
-            if (mouseState == MouseState.SELECTING) {
-                // Update selection rect & select everything inside.
-                SelectRegion(mouseDownPos.Value, mousePos);
-
-                var (min, max) = Utility.Utility.GetMinMax(mouseDownPos.Value, mousePos);
-                selectionRectangle.position = min;
-                selectionRectangle.size = max - min;
-
-                InvalidateObject(selectionRectangle);
-                Invalidate();
-            } else {
-                // Update position of all selected items.
-                List<CanvasShape> shapes = new List<CanvasShape>();
-
-                var visitor = new CanvasObjectGenericVisitor(
-                    (Group group) => { },
-                    (CanvasShape shape) => {
-                        shapes.Add(shape);
-                    },
-                    true
-                );
-
-                foreach (var o in selection) o.accept(visitor);
-
-
-                foreach (var shape in shapes) {
-                    shape.position += delta;
-                    InvalidateObject(shape);
-                }
-            }
-
-
-            this.mousePrevPos = mousePos;
-        }
-
-
-        private void OnKeyDown(object sender, KeyEventArgs e) { SetKeyDown(e.Key, true);  }
-        private void OnKeyUp(object sender, KeyEventArgs e)   { SetKeyDown(e.Key, false); }
-        #endregion PageHandlers
+        #endregion Interface
     }
 }

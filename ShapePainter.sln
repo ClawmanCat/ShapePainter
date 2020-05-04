@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29728.190
+VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapePainter", "ShapePainter\ShapePainter.csproj", "{16A49952-52B1-4B15-B9F9-F7CAF4C52EFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapePainter", "ShapePainter\ShapePainter.csproj", "{1A6B838F-FD02-4B41-ADC7-91C8321073B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{16A49952-52B1-4B15-B9F9-F7CAF4C52EFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16A49952-52B1-4B15-B9F9-F7CAF4C52EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16A49952-52B1-4B15-B9F9-F7CAF4C52EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16A49952-52B1-4B15-B9F9-F7CAF4C52EFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A6B838F-FD02-4B41-ADC7-91C8321073B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A6B838F-FD02-4B41-ADC7-91C8321073B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A6B838F-FD02-4B41-ADC7-91C8321073B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A6B838F-FD02-4B41-ADC7-91C8321073B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {198CCEE9-C868-4519-BB83-5D62CDA32B19}
+		SolutionGuid = {9C1C2B83-875A-419A-A31C-3BF2B20E2799}
 	EndGlobalSection
 EndGlobal
