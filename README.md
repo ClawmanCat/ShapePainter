@@ -4,8 +4,8 @@ A simple shape drawing application written with C# / WPF.
 ### Controls
 - If a shape is selected, click to place or click and drag to resize before placing.  
 - Shift + drag to create a selection.  
-- Ctrl + drag to move the selection.  
-- Alt + drag to resize the selection. Only one item may be selected.  
+- Ctrl + drag to move the selected items.  
+- Alt + drag to resize the selected item. Only one item may be selected.  
   
 ### Patterns
 Several design patterns were implemented as part of this exercise:  
