@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Newtonsoft.Json;
 using System.Reflection;
 using ShapePainter.Utility;
+using System.Windows.Media.Animation;
 
 namespace ShapePainter.Shapes {
     using WPFShape = System.Windows.Shapes.Shape;
@@ -45,6 +46,7 @@ namespace ShapePainter.Shapes {
 
 
         private bool backing_selected;
+        private Storyboard selection_animation_sb = new Storyboard();
         [JsonIgnore] public bool selected {
             get { return backing_selected; }
             set {
@@ -54,24 +56,15 @@ namespace ShapePainter.Shapes {
 
                 // Animate selected objects.
                 if (value) {
-                    Timer timer = new Timer();
-                    timer.Interval = 100;
+                    var animation = new DoubleAnimation { From = 0, To = 70000, Duration = TimeSpan.FromSeconds(3600), RepeatBehavior = RepeatBehavior.Forever };
+                    Storyboard.SetTarget(animation, shape);
+                    Storyboard.SetTargetProperty(animation, new PropertyPath(WPFShape.StrokeDashOffsetProperty));
 
-                    timer.Elapsed += (object src, ElapsedEventArgs args) => {
-                        if (Application.Current == null) {
-                            timer.Stop();
-                            return;
-                        }
-
-                        Application.Current.Dispatcher.Invoke(() => {
-                            if (selected) {
-                                shape.StrokeDashOffset += 0.01;
-                                MainWindow.instance.InvalidateIfHas(this);
-                            } else timer.Stop();
-                        });
-                    };
-
-                    timer.Start();
+                    selection_animation_sb.Children.Add(animation);
+                    selection_animation_sb.Begin(shape);
+                } else {
+                    selection_animation_sb.Stop(shape);
+                    selection_animation_sb.Children.Clear();
                 }
 
                 backing_selected = value;

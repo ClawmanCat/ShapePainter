@@ -96,6 +96,8 @@
     <Compile Include="Command\AddRemoveCommand.cs" />
     <Compile Include="Command\ClearCommand.cs" />
     <Compile Include="Command\CompoundCommand.cs" />
+    <Compile Include="Utility\FunctionBinder.cs" />
+    <Compile Include="Utility\GroupViewBuilder.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />
     <Compile Include="Shapes\Group.cs" />
     <Compile Include="Shapes\ICanvasObject.cs" />
