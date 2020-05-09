@@ -1,5 +1,6 @@
 ﻿using ShapePainter.Command;
 using ShapePainter.Shapes;
+using ShapePainter.Shapes.Canvas;
 using ShapePainter.Strategy;
 using ShapePainter.Utility;
 using ShapePainter.Visitor;
@@ -41,6 +42,9 @@ namespace ShapePainter {
         [Resetable] private HashSet<Key> keyboard = new HashSet<Key>();
 
         private bool exit_on_close;
+
+        TextBox textBlock;
+        String textwrite = "";
         #endregion ClassMembers
 
 
@@ -71,6 +75,7 @@ namespace ShapePainter {
 
             this.EllipseButton.IsChecked = false;
             this.RectangleButton.IsChecked = false;
+            this.OrnamentButton.IsChecked = false;
         }
 
 
@@ -299,7 +304,37 @@ namespace ShapePainter {
             if (RectangleButton.IsChecked ?? false) SetClickStrategy(new ClickStrategyAdd(PlatonicForms.BasicRectangle));
             else SetClickStrategy(new ClickStrategyIdle());
         }
+        private void OnOrnamentButtonClicked(object sender, EventArgs e)
+        {
+            OrnamentButton.IsChecked = false;
 
+            Point mousepos = Mouse.GetPosition(Canvas);
+            textBlock = new TextBox();
+
+            if (OrnamentButton.IsChecked ?? false) { 
+                MessageBox.Show("clicked ornament");
+                SetClickStrategy(new ClickStrategyAdd(DecoratorPattern.textbox(textBlock))); 
+            }
+            else SetClickStrategy(new ClickStrategyIdle());
+
+
+            //DecoratorPattern.textbox(textBlock);
+
+            //ornamentTextChange(sender, e);
+
+            //RunCommand(new AddRemoveCommand(new CanvasShape(
+            //  Decorator.textbox(textBlock),
+            //  Group.Global,
+            //  new Vector(mousepos.X, mousepos.Y)
+            //  ), AddRemoveCommand.Mode.ADD));
+        }
+        private String ornamentTextChange(object sender, TextChangedEventArgs args)
+        {
+            textwrite += textBlock.Text;
+
+            MessageBox.Show("text input =" + textBlock.Text);
+            return textwrite;
+        }
 
         protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
@@ -327,6 +362,7 @@ namespace ShapePainter {
         public void ClearAddButtonStates() {
             this.EllipseButton.IsChecked = false;
             this.RectangleButton.IsChecked = false;
+            this.OrnamentButton.IsChecked = false;
         }
 
 

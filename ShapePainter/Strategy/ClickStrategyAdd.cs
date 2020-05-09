@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ShapePainter.Strategy {
@@ -13,11 +14,17 @@ namespace ShapePainter.Strategy {
 
     public class ClickStrategyAdd : IClickStrategy {
         private WPFShape shape;
+        private TextBox text;
         private Shape canvas_shape;
 
 
         public ClickStrategyAdd(WPFShape shape) : base() {
             this.shape = shape;
+            this.canvas_shape = null;
+        }
+        public ClickStrategyAdd(TextBox text) : base()
+        {
+            this.text = text;
             this.canvas_shape = null;
         }
 

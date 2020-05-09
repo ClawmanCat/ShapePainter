@@ -96,6 +96,7 @@
     <Compile Include="Command\AddRemoveCommand.cs" />
     <Compile Include="Command\ClearCommand.cs" />
     <Compile Include="Command\CompoundCommand.cs" />
+    <Compile Include="Decorator\DecoratorPattern.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />
     <Compile Include="Shapes\Group.cs" />
     <Compile Include="Shapes\ICanvasObject.cs" />
@@ -163,6 +164,9 @@
   <ItemGroup>
     <Resource Include="Icons\redo.png" />
     <Resource Include="Icons\undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\ornament.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

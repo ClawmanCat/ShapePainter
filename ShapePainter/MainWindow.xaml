@@ -126,7 +126,18 @@
                                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom">Rectangle</TextBlock>
                               </Grid>
                          </ToggleButton>
-                    </ToolBar>
+                    <ToggleButton Click="OnOrnamentButtonClicked" x:Name="OrnamentButton">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="4*"></RowDefinition>
+                                <RowDefinition Height="1*"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Image Grid.Row="0" Source="Icons/ornament.png" RenderOptions.BitmapScalingMode="Fant" Stretch="Fill" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"></Image>
+                            <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom">Ornament</TextBlock>
+                        </Grid>
+                    </ToggleButton>
+                </ToolBar>
                </ToolBarTray>
           </DockPanel>
     </Grid>
