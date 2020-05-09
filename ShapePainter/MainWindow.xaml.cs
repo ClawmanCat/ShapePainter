@@ -440,11 +440,7 @@ namespace ShapePainter
         public void AddOrnament(object sender, EventArgs e)
         {
             Point mousepos = Mouse.GetPosition(Canvas);
-
             textBlock = new TextBox();
-            //Decorator.textbox(textBlock);
-
-            //ornamentTextChange(sender, e);
 
             RunCommand(new AddRemoveCommand(new CanvasShape(
               Decorator.textbox(textBlock),
@@ -452,9 +448,28 @@ namespace ShapePainter
               new Vector(mousepos.X, mousepos.Y)
               ), AddRemoveCommand.Mode.ADD));
 
-            //Canvas.SetLeft(textBlock, mousepos.X);
-            //Canvas.SetTop(textBlock, mousepos.Y);
-            //Canvas.Children.Add(textBlock);
+            MainWindow mainwindow = Window.GetWindow(this) as MainWindow;
+
+            var selectedShape = mainwindow.GetSelectedObjects();
+            MessageBox.Show(selectedShape.ToString());
+
+            //if (mousepos.Y < selectedShape)
+            //{
+            //    //bottom
+            //}
+            //if (mousepos.Y > selectedShape.position.y)
+            //{
+            //    //top
+            //}
+            //if (mousepos.X > selectedShape.position.x)
+            //{
+            //    //right
+            //}
+            //if (mousepos.Y < selectedShape.position.x)
+            //{
+            //    //left
+            //}
+            
         }
         private String ornamentTextChange(object sender, TextChangedEventArgs args)
         {
@@ -495,6 +510,7 @@ namespace ShapePainter
                 //set buttons on false
                 ellipseButton = false;
                 rectangleButton = false;
+                ornamentButton = false;
             } else if (mouseState == MouseState.MOVING) {
                 recording = new MoveCommand();
                 ((MoveCommand) recording).RecordStart(selection);
