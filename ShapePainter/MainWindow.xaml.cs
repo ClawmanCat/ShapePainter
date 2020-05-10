@@ -308,13 +308,17 @@ namespace ShapePainter {
         {
             OrnamentButton.IsChecked = false;
 
-            Point mousepos = Mouse.GetPosition(Canvas);
-            textBlock = new TextBox();
+            var selected = instance.GetSelection();
+            //MessageBox.Show(selected.ToString());
 
-            if (OrnamentButton.IsChecked ?? false) { 
-                MessageBox.Show("clicked ornament");
-                SetClickStrategy(new ClickStrategyAdd(DecoratorPattern.textbox(textBlock))); 
-            }
+            Point mousepos = Mouse.GetPosition(Canvas);
+                textBlock = new TextBox();
+
+                if (OrnamentButton.IsChecked ?? false) {
+                    
+                    MessageBox.Show("clicked ornament");
+                    //SetClickStrategy(new ClickStrategyAdd(DecoratorPattern.textbox(textBlock)));
+                }
             else SetClickStrategy(new ClickStrategyIdle());
 
 
