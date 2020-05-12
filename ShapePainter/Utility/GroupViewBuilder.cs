@@ -47,14 +47,16 @@ namespace ShapePainter.Utility {
 
                     if (dest_obj == null) return;
 
+
                     foreach (TreeViewItem i in moved) {
                         ICanvasObject contained_obj = i.Tag as ICanvasObject;
-                        if (contained_obj == null || contained_obj == dest_obj || !(dest_obj is Group)) continue;
+                        if (contained_obj == null || contained_obj == dest_obj || !(dest_obj is Group) || moved.Any(x => x.Tag == contained_obj.parent)) continue;
 
                         contained_obj.parent.children.Remove(contained_obj);
                         contained_obj.parent = dest_obj;
                         dest_obj.children.Add(contained_obj);
                     }
+
 
                     MainWindow.instance.ForceRebuildGroupView();
                 };
