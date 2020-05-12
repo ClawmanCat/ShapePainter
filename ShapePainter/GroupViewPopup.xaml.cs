@@ -14,53 +14,47 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ShapePainter {
-    public partial class GroupViewPopup : Window, INotifyPropertyChanged {
+namespace ShapePainter
+{
+    public partial class GroupViewPopup : Window, INotifyPropertyChanged
+    {
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
         private ICanvasObject obj;
 
 
-        public string name {
-            get {
-                return obj is Group ? ((Group) obj).name : obj.GetType().Name;
+        public string name
+        {
+            get
+            {
+                return obj is Group ? ((Group)obj).name : obj.GetType().Name;
             }
-            set {
-                ((Group) obj).name = value;
+            set
+            {
+                ((Group)obj).name = value;
                 OnPropertyChanged("name");
                 MainWindow.instance.ForceRebuildGroupView();
             }
         }
 
 
-        public bool name_locked {
+        public bool name_locked
+        {
             get { return !(obj is Group); }
         }
 
 
-        public GroupViewPopup(ICanvasObject obj) {
+        public GroupViewPopup(ICanvasObject obj)
+        {
             this.obj = obj;
 
             InitializeComponent();
         }
 
 
-        private void OnPropertyChanged(string name) {
-            if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
-        public string textTop
+        private void OnPropertyChanged(string name)
         {
-            get
-            {
-                if (TextTop == null) return string.Empty;
-                return TextTop.Text;
-            }
-            set
-            {
-                //((Group)obj).name = value;
-                //OnPropertyChanged("name");
-                //MainWindow.instance.ForceRebuildGroupView();
-            }
+            if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
     }
 }

@@ -7,24 +7,24 @@
         mc:Ignorable="d"
         Title="Canvas Object Settings Manager" Height="200" Width="400" Name="COSM">
     <Grid Background="LightGray" DataContext="{Binding ElementName=COSM, Path=.}">
-          <Grid.RowDefinitions>
-               <RowDefinition Height="2*"></RowDefinition>
-               <RowDefinition Height="2*"></RowDefinition>
-               <RowDefinition Height="2*"></RowDefinition>
-               <RowDefinition Height="5*"></RowDefinition>
-          </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+        </Grid.RowDefinitions>
 
 
-          <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-               <TextBlock FontSize="20" Text="Settings for " HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-               <TextBlock FontSize="20" Text="{Binding Path=name}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-          </StackPanel>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock FontSize="20" Text="Settings for " HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+            <TextBlock FontSize="20" Text="{Binding Path=name}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+        </StackPanel>
 
 
-          <StackPanel Grid.Row="1" Orientation="Horizontal">
-               <TextBlock FontSize="12" Text="Display name: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
-               <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=name}" IsReadOnly="{Binding Path=name_locked}"></TextBox>
-          </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock FontSize="12" Text="Display name: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
+            <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=name}" IsReadOnly="{Binding Path=name_locked}"></TextBox>
+        </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <TextBlock FontSize="12" Text="Text top: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
             <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop}" x:Name="TextTop"></TextBox>
