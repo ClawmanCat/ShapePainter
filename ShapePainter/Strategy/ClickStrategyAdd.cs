@@ -51,6 +51,8 @@ namespace ShapePainter.Strategy
 
         public void OnMouseUp(Vector downpos, Vector uppos) {
             OnMouseMoved(downpos, uppos);
+
+            if (canvas_shape == null) return;
             if (canvas_shape.size == new Vector(0, 0)) canvas_shape.size = new Vector(shape.Width, shape.Height);
 
             this.canvas_shape = null;

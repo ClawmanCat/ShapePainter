@@ -52,5 +52,11 @@ namespace ShapePainter.Utility {
             var (min, max) = GetMinMax(a, b);
             return v.X >= min.X && v.Y >= min.Y && v.X < max.X && v.Y < max.Y;
         }
+
+
+        public static bool Any(this ItemCollection collection, Func<object, bool> fn) {
+            foreach (var obj in collection) if (fn(obj)) return true;
+            return false;
+        }
     }
 }
