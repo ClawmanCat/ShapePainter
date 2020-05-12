@@ -31,6 +31,9 @@ namespace ShapePainter.Utility {
 
 
                 // Drag & drop event handlers.
+                Vector? mousedown = null;
+
+
                 item.MouseMove += (object s, MouseEventArgs e) => {
                     if (e.LeftButton != MouseButtonState.Pressed) return;
 
@@ -40,14 +43,30 @@ namespace ShapePainter.Utility {
 
 
                 item.Drop += (object s, DragEventArgs e) => {
-                    List<TreeViewItem> dest = (List<TreeViewItem>) e.Data.GetData(DataFormats.Serializable);
-                    Trace.WriteLine("test");
+                    List<TreeViewItem> moved = (List<TreeViewItem>) e.Data.GetData(DataFormats.Serializable);
+
+                    TreeViewItem dest = e.Source as TreeViewItem;
+                    ICanvasObject dest_obj = dest.Tag as ICanvasObject;
+
+                    if (dest_obj == null) return;
+
+                    foreach (TreeViewItem i in moved) {
+                        ICanvasObject contained_obj = i.Tag as ICanvasObject;
+                        if (contained_obj == null || contained_obj == dest_obj || !(dest_obj is Group)) continue;
+
+                        contained_obj.parent.children.Remove(contained_obj);
+                        contained_obj.parent = dest_obj;
+                        dest_obj.children.Add(contained_obj);
+                    }
+
+                    MainWindow.instance.ForceRebuildGroupView();
                 };
 
 
                 item.Selected   += mouse_callback.Bind(true).Bind(obj).Invoke;
                 item.Unselected += mouse_callback.Bind(false).Bind(obj).Invoke;
                 item.IsExpanded = IsExpanded(obj, prev_state);
+                item.Tag = obj;
 
 
                 if (IsSelected(obj)) {
