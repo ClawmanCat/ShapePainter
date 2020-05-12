@@ -3,6 +3,7 @@ using ShapePainter.Utility;
 using ShapePainter.Visitor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,11 @@ using System.Windows.Media;
 
 namespace ShapePainter.Utility {
     public static class GroupViewBuilder {
-        public static TreeView Make(ICanvasObject basenode) {
+        public static TreeView Make(ICanvasObject basenode, TreeView prev_state) {
+            TreeView view = new TreeView { AllowDrop = true };
+            List<TreeViewItem> selected_items = new List<TreeViewItem>();
+
+
             Action<object, RoutedEventArgs, ICanvasObject, bool> mouse_callback = (object o, RoutedEventArgs e, ICanvasObject obj, bool selected) => {
                 MainWindow.instance.OnGroupViewClicked(selected, obj);
                 e.Handled = true;
@@ -24,12 +29,31 @@ namespace ShapePainter.Utility {
             converter = (ICanvasObject obj) => {
                 TreeViewItem item = new TreeViewItem();
 
+
+                // Drag & drop event handlers.
+                item.MouseMove += (object s, MouseEventArgs e) => {
+                    if (e.LeftButton != MouseButtonState.Pressed) return;
+
+                    DataObject data = new DataObject(DataFormats.Serializable, selected_items);
+                    DragDrop.DoDragDrop(view, data, DragDropEffects.Move);
+                };
+
+
+                item.Drop += (object s, DragEventArgs e) => {
+                    List<TreeViewItem> dest = (List<TreeViewItem>) e.Data.GetData(DataFormats.Serializable);
+                    Trace.WriteLine("test");
+                };
+
+
                 item.Selected   += mouse_callback.Bind(true).Bind(obj).Invoke;
                 item.Unselected += mouse_callback.Bind(false).Bind(obj).Invoke;
-                item.IsExpanded = IsExpanded(obj);
+                item.IsExpanded = IsExpanded(obj, prev_state);
 
-                if (IsSelected(obj)) item.Background = Brushes.LightGray;
 
+                if (IsSelected(obj)) {
+                    selected_items.Add(item);
+                    item.Background = Brushes.LightGray;
+                }
 
                 if (obj is Shape) {
                     item.Header = ((Shape) obj).shape.GetType().Name;
@@ -44,21 +68,35 @@ namespace ShapePainter.Utility {
                 return item;
             };
 
-
-            TreeView view = new TreeView();
+            
             view.Items.Add(converter(basenode));
-
             return view;
         }
 
 
-        private static bool IsExpanded(ICanvasObject obj) {
-            return MainWindow.instance.GetSelection().Contains(obj) || obj.children.Any(IsExpanded);
+        private static bool IsExpanded(ICanvasObject obj, TreeView prev_state) {
+            Func<TreeViewItem, bool> search = null; 
+            search = (TreeViewItem item) => {
+                return item.Tag as ICanvasObject == obj || item.Items.Any(x => search(x as TreeViewItem));
+            };
+
+            return MainWindow.instance.GetSelection().Contains(obj) || 
+                   obj.children.Any(x => IsExpanded(x, prev_state)) || 
+                   (prev_state?.Items.Any(x => search(x as TreeViewItem)) ?? false);
         }
 
 
         private static bool IsSelected(ICanvasObject obj) {
             return MainWindow.instance.GetSelection().Contains(obj);
+        }
+
+
+        private static TreeViewItem GetHoveredItem(TreeView view) {
+            HitTestResult result = VisualTreeHelper.HitTest(view, Mouse.GetPosition(null));
+
+            return (result == null || !(result.VisualHit is TreeViewItem))
+                ? result.VisualHit as TreeViewItem
+                : null;
         }
     }
 }

@@ -128,7 +128,7 @@ namespace ShapePainter {
 
 
             if (update_group_view) {
-                this.GroupViewContainer.Content = GroupViewBuilder.Make(base_node);
+                this.GroupViewContainer.Content = GroupViewBuilder.Make(base_node, (TreeView) this.GroupViewContainer.Content);
                 update_group_view = false;
             }
 
@@ -321,15 +321,17 @@ namespace ShapePainter {
 
         private static int OnGroupViewAddClicked_Counter = 0;
         private void OnGroupViewAddClicked(object sender, EventArgs e) {
-            DoCommand(new AddRemoveCommand(new Group("Group " + OnGroupViewAddClicked_Counter++, base_node), true));
+            Group group = new Group("Group " + OnGroupViewAddClicked_Counter++, base_node);
+
+            DoCommand(new AddRemoveCommand(group, true));
+            SetSelected(group, true);
         }
 
 
         private void OnGroupViewRemoveClicked(object sender, EventArgs e) {
-            if (this.selection.Any(x => x is Group && x != base_node)) {
+            if (this.selection.Any(x => x != base_node)) {
                 CompoundCommand cmd = new CompoundCommand(
                     this.selection
-                        .Where(x => x is Group)
                         .Where(x => x != base_node)
                         .Select(x => new AddRemoveCommand(x, false))
                         .ToArray()
