@@ -22,7 +22,7 @@
 
           <StackPanel Grid.Row="1" Orientation="Horizontal">
                <TextBlock FontSize="12" Text="Display name: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
-               <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=name}" IsReadOnly="{Binding Path=name_locked}"></TextBox>
+               <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=name_locked}"></TextBox>
           </StackPanel>
      </Grid>
 </Window>
