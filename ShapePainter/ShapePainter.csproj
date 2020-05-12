@@ -96,7 +96,6 @@
     <Compile Include="Command\AddRemoveCommand.cs" />
     <Compile Include="Command\ClearCommand.cs" />
     <Compile Include="Command\CompoundCommand.cs" />
-    <Compile Include="Decorator\DecoratorPattern.cs" />
     <Compile Include="Shapes\DecoratedObject.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />
     <Compile Include="Shapes\Group.cs" />

@@ -1,6 +1,5 @@
 ﻿using ShapePainter.Command;
 using ShapePainter.Shapes;
-using ShapePainter.Shapes.Canvas;
 using ShapePainter.Strategy;
 using ShapePainter.Utility;
 using ShapePainter.Visitor;
