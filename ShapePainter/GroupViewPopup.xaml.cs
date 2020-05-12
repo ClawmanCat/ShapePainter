@@ -48,5 +48,19 @@ namespace ShapePainter {
         private void OnPropertyChanged(string name) {
             if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
+        public string textTop
+        {
+            get
+            {
+                if (TextTop == null) return string.Empty;
+                return TextTop.Text;
+            }
+            set
+            {
+                //((Group)obj).name = value;
+                //OnPropertyChanged("name");
+                //MainWindow.instance.ForceRebuildGroupView();
+            }
+        }
     }
 }
