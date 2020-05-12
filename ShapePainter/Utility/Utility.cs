@@ -7,6 +7,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+
+using static System.Linq.Enumerable;
+
 
 namespace ShapePainter.Utility {
     public static class Utility {
@@ -50,19 +54,9 @@ namespace ShapePainter.Utility {
         }
 
 
-        public static string Unescape(this string str) {
-            string result = "";
-
-            str = str.Replace("\\r", "\r");
-            str = str.Replace("\\n", "\n");
-
-            foreach (char ch in str) {
-                if (ch != '\\') result += ch;
-            }
-
-            result = result.Trim('"');
-
-            return result;
+        public static bool Any(this ItemCollection collection, Func<object, bool> fn) {
+            foreach (var obj in collection) if (fn(obj)) return true;
+            return false;
         }
     }
 }

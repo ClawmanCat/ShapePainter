@@ -6,6 +6,12 @@ A simple shape drawing application written with C# / WPF.
 - Shift + drag to create a selection.  
 - Ctrl + drag to move the selected items.  
 - Alt + drag to resize the selected item. Only one item may be selected.  
+- In the group menu, click to select or deselect a group of shape.
+- In the group menu, drag and drop one or more objects to change the hierarchy.
+- In the group menu, ctrl + click to select or deselect a group or shape while leaving the existing selection unchanged.
+- In the group menu, X + click to open the Canvas Object Settings Manager.
+- Press Escape to deselect all selected items.
+- Press Delete to delete all selected items.
   
 ### Patterns
 Several design patterns were implemented as part of this exercise:  

@@ -40,6 +40,8 @@ namespace ShapePainter {
 
         [Resetable] private HashSet<Key> keyboard = new HashSet<Key>();
 
+        [Resetable] private bool update_group_view = true;
+
         private bool exit_on_close;
         #endregion ClassMembers
 
@@ -51,7 +53,8 @@ namespace ShapePainter {
         }
 
 
-        // Resets the object to its default state.
+        // Resets the object to its default state. 
+        // Default values are obtained from a dummy object using reflection.
         public void Reset() {
             if (objects.Count > 0) DoCommand(new ClearCommand(objects));
 
@@ -71,6 +74,8 @@ namespace ShapePainter {
 
             this.EllipseButton.IsChecked = false;
             this.RectangleButton.IsChecked = false;
+
+            this.Invalidate();
         }
 
 
@@ -121,9 +126,16 @@ namespace ShapePainter {
                 obj.accept(visitor);
             }
 
-            this.Canvas.InvalidateVisual();
-            this.Canvas.InvalidateArrange();
-            this.Canvas.InvalidateMeasure();
+
+            if (update_group_view) {
+                this.GroupViewContainer.Content = GroupViewBuilder.Make(base_node, (TreeView) this.GroupViewContainer.Content);
+                update_group_view = false;
+            }
+
+
+            this.InvalidateVisual();
+            this.InvalidateArrange();
+            this.InvalidateMeasure();
         }
 
 
@@ -148,6 +160,7 @@ namespace ShapePainter {
             );
 
             obj.accept(visitor);
+            update_group_view = true;
             Invalidate();
         }
 
@@ -164,6 +177,7 @@ namespace ShapePainter {
             );
 
             obj.accept(visitor);
+            update_group_view = true;
             Invalidate();
         }
 
@@ -193,6 +207,8 @@ namespace ShapePainter {
             );
 
             obj.accept(visitor);
+            update_group_view = true;
+            Invalidate();
         }
 
 
@@ -217,7 +233,9 @@ namespace ShapePainter {
         private void OnKeyDown(object sender, KeyEventArgs e) {
             keyboard.Add(e.SystemKey == Key.None ? e.Key : e.SystemKey);
 
+            // TODO: Clean this up into its own class if we have more keybinds.
             if (e.Key == Key.Escape) ClearSelection();
+            if (e.Key == Key.Delete) DoCommand(new ClearCommand(selection));
         }
 
 
@@ -301,9 +319,39 @@ namespace ShapePainter {
         }
 
 
+        private static int OnGroupViewAddClicked_Counter = 0;
+        private void OnGroupViewAddClicked(object sender, EventArgs e) {
+            Group group = new Group("Group " + OnGroupViewAddClicked_Counter++, base_node);
+
+            DoCommand(new AddRemoveCommand(group, true));
+            SetSelected(group, true);
+        }
+
+
+        private void OnGroupViewRemoveClicked(object sender, EventArgs e) {
+            if (this.selection.Any(x => x != base_node)) {
+                CompoundCommand cmd = new CompoundCommand(
+                    this.selection
+                        .Where(x => x != base_node)
+                        .Select(x => new AddRemoveCommand(x, false))
+                        .ToArray()
+                );
+
+                DoCommand(cmd);
+            }
+        }
+
+
         protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
             if (exit_on_close) Application.Current.Shutdown();
+        }
+
+
+        public void OnGroupViewClicked(bool selected, ICanvasObject obj) {
+            // Ctrl + click = Add to selection, otherwise replace selection.
+            if (!IsKeyPressed(Key.LeftCtrl) && !IsKeyPressed(Key.RightCtrl)) ClearSelection();
+            SetSelected(obj, selected);
         }
         #endregion PageHandlers
 
@@ -342,6 +390,12 @@ namespace ShapePainter {
             bitmap.Render(this.Canvas);
 
             return bitmap;
+        }
+
+
+        public void ForceRebuildGroupView() {
+            update_group_view = true;
+            Invalidate();
         }
         #endregion Interface
     }

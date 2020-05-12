@@ -14,7 +14,12 @@
                <RowDefinition Height="40"></RowDefinition>
                <RowDefinition></RowDefinition>
           </Grid.RowDefinitions>
-          
+
+          <Grid.ColumnDefinitions>
+               <ColumnDefinition></ColumnDefinition>
+               <ColumnDefinition Width="200"></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+
           <Canvas 
                Grid.Row="1"
                x:Name="Canvas"
@@ -26,6 +31,36 @@
                Panel.ZIndex="10"
                Background="Transparent"
           ></Canvas>
+
+
+          <Grid Grid.Column="1" Grid.RowSpan="2">
+               <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+               </Grid.RowDefinitions>
+
+
+               <Grid>
+                    <Grid.ColumnDefinitions>
+                         <ColumnDefinition></ColumnDefinition>
+                         <ColumnDefinition></ColumnDefinition>
+                         <ColumnDefinition></ColumnDefinition>
+                         <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+
+                    <Button Click="OnGroupViewRemoveClicked" Width="20" Height="20" Grid.Column="1" ToolTip="Delete Group">
+                         <TextBlock HorizontalAlignment="Center" Margin="-10">-</TextBlock>
+                    </Button>
+
+                    <Button Click="OnGroupViewAddClicked" Width="20" Height="20" Grid.Column="2" ToolTip="Add Group">
+                         <TextBlock HorizontalAlignment="Center" Margin="-10">+</TextBlock>
+                    </Button>
+               </Grid>
+
+
+               <ContentControl x:Name="GroupViewContainer" Grid.Row="1"></ContentControl>
+          </Grid>
 
 
           <DockPanel Grid.Row="0" Panel.ZIndex="20" Width="1280" VerticalAlignment="Top">

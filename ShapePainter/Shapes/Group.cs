@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShapePainter.Shapes {
     public class Group : ICanvasObject {
-        public string name { get; private set; }
+        public string name { get; set; }
 
         
         // For deserialization

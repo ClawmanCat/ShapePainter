@@ -1,0 +1,28 @@
+﻿<Window x:Class="ShapePainter.GroupViewPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShapePainter"
+        mc:Ignorable="d"
+        Title="Canvas Object Settings Manager" Height="200" Width="400" Name="COSM">
+    <Grid Background="LightGray" DataContext="{Binding ElementName=COSM, Path=.}">
+          <Grid.RowDefinitions>
+               <RowDefinition Height="2*"></RowDefinition>
+               <RowDefinition Height="2*"></RowDefinition>
+               <RowDefinition Height="5*"></RowDefinition>
+          </Grid.RowDefinitions>
+
+
+          <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+               <TextBlock FontSize="20" Text="Settings for " HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+               <TextBlock FontSize="20" Text="{Binding Path=name}" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+          </StackPanel>
+
+
+          <StackPanel Grid.Row="1" Orientation="Horizontal">
+               <TextBlock FontSize="12" Text="Display name: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
+               <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=name_locked}"></TextBox>
+          </StackPanel>
+     </Grid>
+</Window>
