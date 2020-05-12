@@ -31,9 +31,6 @@ namespace ShapePainter.Utility {
 
 
                 // Drag & drop event handlers.
-                Vector? mousedown = null;
-
-
                 item.MouseMove += (object s, MouseEventArgs e) => {
                     if (e.LeftButton != MouseButtonState.Pressed) return;
 
@@ -78,6 +75,14 @@ namespace ShapePainter.Utility {
                     item.Header = ((Shape) obj).shape.GetType().Name;
                 } else {
                     item.Header = "[G] " + ((Group) obj).name;
+
+                    item.PreviewMouseLeftButtonDown += (object s, MouseButtonEventArgs e) => {
+                        if (e.Source == item && MainWindow.instance.IsKeyPressed(Key.X)) {
+                            GroupViewPopup popup = new GroupViewPopup(obj);
+                            popup.Show();
+                        }
+                    };
+
                     foreach (var child in obj.children) {
                         if (MainWindow.instance.HasCanvasObject(child)) item.Items.Add(converter(child));
                     }
