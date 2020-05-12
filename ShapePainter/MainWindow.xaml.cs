@@ -151,7 +151,7 @@ namespace ShapePainter {
                 },
                 true
             );
-
+            if (obj is DecoratedObject) { /* add text */ }
             obj.accept(visitor);
             Invalidate();
         }
@@ -167,7 +167,7 @@ namespace ShapePainter {
                 },
                 true
             );
-
+            if (obj is DecoratedObject) { /* remove text */ }
             obj.accept(visitor);
             Invalidate();
         }

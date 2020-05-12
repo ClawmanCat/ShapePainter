@@ -1,22 +1,15 @@
 ﻿using ShapePainter.Command;
 using ShapePainter.Shapes;
-using ShapePainter.Shapes.Canvas;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ShapePainter.Strategy {
+namespace ShapePainter.Strategy
+{
     using WPFShape = System.Windows.Shapes.Shape;
 
     public class ClickStrategyAdd : IClickStrategy {
         private WPFShape shape;
-        private TextBox text;
-        private DecoratorPattern text_box;
         private Shape canvas_shape;
 
 
@@ -24,12 +17,6 @@ namespace ShapePainter.Strategy {
             this.shape = shape;
             this.canvas_shape = null;
         }
-        public ClickStrategyAdd(TextBox text) : base()
-        {
-            this.text = text;
-            this.text_box = null;
-        }
-
 
         public void OnMouseDown(Vector downpos) {
             var window = MainWindow.instance;
@@ -52,9 +39,6 @@ namespace ShapePainter.Strategy {
 
             this.canvas_shape = new Shape(window.base_node, shape.Clone(), downpos);
             window.DoCommand(new AddRemoveCommand(this.canvas_shape, true));
-
-            this.text = new TextBox(window.base_node, text, downpos);
-            window.DoCommand(new AddRemoveCommand(this.text, true));
         }
 
 

@@ -9,7 +9,6 @@ using System.Windows.Controls;
 namespace ShapePainter.Command {
     public class AddRemoveCommand : ICanvasCommand {
         private ICanvasObject obj;
-        private TextBox text;
         private bool add;
 
 
@@ -17,13 +16,6 @@ namespace ShapePainter.Command {
             this.obj = obj;
             this.add = add;
         }
-        public AddRemoveCommand(TextBox obj, bool add)
-        {
-            this.text = obj;
-            this.add = add;
-        }
-
-
         public void doCommand(MainWindow window) {
             if (add) window.AddCanvasObject(obj);
             else window.RemoveCanvasObject(obj);
