@@ -97,6 +97,9 @@
     <Compile Include="Command\ClearCommand.cs" />
     <Compile Include="Command\CompoundCommand.cs" />
     <Compile Include="Shapes\DecoratedObject.cs" />
+    <Compile Include="GroupViewPopup.xaml.cs">
+      <DependentUpon>GroupViewPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utility\FunctionBinder.cs" />
     <Compile Include="Utility\GroupViewBuilder.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />
@@ -114,6 +117,10 @@
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="Visitor\GenericVisitor.cs" />
     <Compile Include="Visitor\IVisitor.cs" />
+    <Page Include="GroupViewPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

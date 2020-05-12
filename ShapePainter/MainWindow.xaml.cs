@@ -441,6 +441,12 @@ namespace ShapePainter {
 
             return bitmap;
         }
+
+
+        public void ForceRebuildGroupView() {
+            update_group_view = true;
+            Invalidate();
+        }
         #endregion Interface
     }
 }
