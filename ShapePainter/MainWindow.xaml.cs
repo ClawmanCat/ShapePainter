@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -77,7 +78,7 @@ namespace ShapePainter {
 
             this.EllipseButton.IsChecked = false;
             this.RectangleButton.IsChecked = false;
-            this.OrnamentButton.IsChecked = false;
+            //this.OrnamentButton.IsChecked = false;
 
             this.Invalidate();
         }
@@ -209,7 +210,6 @@ namespace ShapePainter {
                 },
                 true
             );
-
             obj.accept(visitor);
             update_group_view = true;
             Invalidate();
@@ -323,32 +323,43 @@ namespace ShapePainter {
         }
         private void OnOrnamentButtonClicked(object sender, EventArgs e)
         {
-            OrnamentButton.IsChecked = false;
+            //OrnamentButton.IsChecked = false;
 
-            var selected = instance.GetSelection();
-            //MessageBox.Show(selected.ToString());
+            //textBlock = new TextBox();
 
-            Point mousepos = Mouse.GetPosition(Canvas);
-                textBlock = new TextBox();
+            //Popup codePopup = new Popup();
+            //TextBlock popupText = new TextBlock();
+            //popupText.Text = "Popup Text";
+            //popupText.Background = Brushes.LightBlue;
+            //popupText.Foreground = Brushes.Blue;
+            //codePopup.Child = popupText;
+            //codePopup.Placement = PlacementMode.Center;
+            //codePopup.Width = 100;
+            //codePopup.Height = 50;
+            //textBlock.Text = "test";
+            //codePopup.IsOpen = true;
 
-                if (OrnamentButton.IsChecked ?? false) {
-                    
-                    MessageBox.Show("clicked ornament");
-                    //SetClickStrategy(new ClickStrategyAdd(DecoratorPattern.textbox(textBlock)));
-                }
-            else SetClickStrategy(new ClickStrategyIdle());
+            //var selected = instance.GetSelection();
+            ////MessageBox.Show(selected.ToString());
 
+            //Point mousepos = Mouse.GetPosition(Canvas);
+            //    textBlock = new TextBox();
 
-            //DecoratorPattern.textbox(textBlock);
+            //    if (OrnamentButton.IsChecked ?? false) {
 
-            //ornamentTextChange(sender, e);
-
-            //RunCommand(new AddRemoveCommand(new CanvasShape(
-            //  Decorator.textbox(textBlock),
-            //  Group.Global,
-            //  new Vector(mousepos.X, mousepos.Y)
-            //  ), AddRemoveCommand.Mode.ADD));
+            //        MessageBox.Show("clicked ornament");
+            //        //SetClickStrategy(new ClickStrategyAdd(DecoratorPattern.textbox(textBlock)));
+            //    }
+            //else SetClickStrategy(new ClickStrategyIdle());   
         }
+        //public string Top
+        //{
+        //    get
+        //    {
+        //        if (textBlock == null) return string.Empty;
+        //        return textBlock.Text;
+        //    }
+        //}
         private String ornamentTextChange(object sender, TextChangedEventArgs args)
         {
             textwrite += textBlock.Text;
