@@ -7,6 +7,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+
+using static System.Linq.Enumerable;
+
 
 namespace ShapePainter.Utility {
     public static class Utility {
@@ -47,22 +51,6 @@ namespace ShapePainter.Utility {
         public static bool InBox(this Vector v, Vector a, Vector b) {
             var (min, max) = GetMinMax(a, b);
             return v.X >= min.X && v.Y >= min.Y && v.X < max.X && v.Y < max.Y;
-        }
-
-
-        public static string Unescape(this string str) {
-            string result = "";
-
-            str = str.Replace("\\r", "\r");
-            str = str.Replace("\\n", "\n");
-
-            foreach (char ch in str) {
-                if (ch != '\\') result += ch;
-            }
-
-            result = result.Trim('"');
-
-            return result;
         }
     }
 }
