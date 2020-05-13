@@ -47,6 +47,8 @@ namespace ShapePainter {
 
         TextBox textBlock;
         String textwrite = "";
+        DecoratedObject decoratedObject;
+
         #endregion ClassMembers
 
 
@@ -163,7 +165,12 @@ namespace ShapePainter {
                 },
                 true
             );
-            if (obj is DecoratedObject) { /* add text */ }
+            if (obj is DecoratedObject) {
+                /* add text */
+                String top = "";
+                this.objects.Add(obj);
+                this.Canvas.Children.Add(decoratedObject.ornamentShape(top));
+            }
             obj.accept(visitor);
             update_group_view = true;
             Invalidate();
@@ -180,7 +187,11 @@ namespace ShapePainter {
                 },
                 true
             );
-            if (obj is DecoratedObject) { /* remove text */ }
+            if (obj is DecoratedObject) {
+                /* remove text */
+                String top = "";
+                this.Canvas.Children.Remove(decoratedObject.ornamentShape(top));
+            }
             obj.accept(visitor);
             update_group_view = true;
             Invalidate();
@@ -325,20 +336,6 @@ namespace ShapePainter {
         {
             //OrnamentButton.IsChecked = false;
 
-            //textBlock = new TextBox();
-
-            //Popup codePopup = new Popup();
-            //TextBlock popupText = new TextBlock();
-            //popupText.Text = "Popup Text";
-            //popupText.Background = Brushes.LightBlue;
-            //popupText.Foreground = Brushes.Blue;
-            //codePopup.Child = popupText;
-            //codePopup.Placement = PlacementMode.Center;
-            //codePopup.Width = 100;
-            //codePopup.Height = 50;
-            //textBlock.Text = "test";
-            //codePopup.IsOpen = true;
-
             //var selected = instance.GetSelection();
             ////MessageBox.Show(selected.ToString());
 
@@ -352,22 +349,6 @@ namespace ShapePainter {
             //    }
             //else SetClickStrategy(new ClickStrategyIdle());   
         }
-        //public string Top
-        //{
-        //    get
-        //    {
-        //        if (textBlock == null) return string.Empty;
-        //        return textBlock.Text;
-        //    }
-        //}
-        private String ornamentTextChange(object sender, TextChangedEventArgs args)
-        {
-            textwrite += textBlock.Text;
-
-            MessageBox.Show("text input =" + textBlock.Text);
-            return textwrite;
-        }
-
         private static int OnGroupViewAddClicked_Counter = 0;
         private void OnGroupViewAddClicked(object sender, EventArgs e) {
             Group group = new Group("Group " + OnGroupViewAddClicked_Counter++, base_node);

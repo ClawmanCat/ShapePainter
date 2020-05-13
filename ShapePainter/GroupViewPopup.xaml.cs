@@ -20,6 +20,7 @@ namespace ShapePainter
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ICanvasObject obj;
+        private DecoratedObject decorateobject;
 
 
         public string name {
@@ -51,6 +52,29 @@ namespace ShapePainter
 
         private void OnPropertyChanged(string name) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        public string textTop
+        {
+            get
+            {
+                if (TextTop == null) return string.Empty;
+                return TextTop.Text;
+            }
+            set
+            {
+                //knop die de selected ding omzet naar decoratedobject
+
+                MessageBox.Show(TextTop.Text);
+                var topText = TextTop.Text;
+                decorateobject.ornamentShape(topText);
+
+                //add text to shape
+                MainWindow.instance.ForceRebuildGroupView();
+            }
+        }
+        public bool textTop_locked
+        {
+            get { return !(obj is Shape); }
         }
     }
 }

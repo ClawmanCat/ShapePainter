@@ -27,7 +27,7 @@
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <TextBlock FontSize="12" Text="Text top: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
-            <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop}" x:Name="TextTop"></TextBox>
+            <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop_locked}" x:Name="TextTop"></TextBox>
         </StackPanel>
     </Grid>
 </Window>
