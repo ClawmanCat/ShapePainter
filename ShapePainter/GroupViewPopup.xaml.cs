@@ -12,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ShapePainter
 {
@@ -23,11 +22,9 @@ namespace ShapePainter
         private ICanvasObject obj;
 
 
-        public string name
-        {
-            get
-            {
-                return obj is Group ? ((Group)obj).name : obj.GetType().Name;
+        public string name {
+            get {
+                return obj is Group ? ((Group) obj).name : ((Shape) obj).shape.GetType().Name;
             }
             set
             {
@@ -52,9 +49,8 @@ namespace ShapePainter
         }
 
 
-        private void OnPropertyChanged(string name)
-        {
-            if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
+        private void OnPropertyChanged(string name) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

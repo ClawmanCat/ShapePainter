@@ -20,3 +20,4 @@ Several design patterns were implemented as part of this exercise:
 - **Visitor Pattern:** A visitor may be used to visit a CanvasObject as either a Group or a Shape.  
 - **Strategy Pattern:** Several different click strategies exist to handle the different mouse functionalities described in the Controls paragraph of this document.  
 - **Decorator Pattern:** TODO.  
+- **Composite Pattern:** Group / Shape nesting structure.
