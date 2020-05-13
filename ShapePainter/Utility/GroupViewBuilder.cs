@@ -73,17 +73,17 @@ namespace ShapePainter.Utility {
                     item.Background = Brushes.LightGray;
                 }
 
+                item.PreviewMouseLeftButtonDown += (object s, MouseButtonEventArgs e) => {
+                    if (e.Source == item && MainWindow.instance.IsKeyPressed(Key.X)) {
+                        GroupViewPopup popup = new GroupViewPopup(obj);
+                        popup.Show();
+                    }
+                };
+
                 if (obj is Shape) {
                     item.Header = ((Shape) obj).shape.GetType().Name;
                 } else {
                     item.Header = "[G] " + ((Group) obj).name;
-
-                    item.PreviewMouseLeftButtonDown += (object s, MouseButtonEventArgs e) => {
-                        if (e.Source == item && MainWindow.instance.IsKeyPressed(Key.X)) {
-                            GroupViewPopup popup = new GroupViewPopup(obj);
-                            popup.Show();
-                        }
-                    };
 
                     foreach (var child in obj.children) {
                         if (MainWindow.instance.HasCanvasObject(child)) item.Items.Add(converter(child));

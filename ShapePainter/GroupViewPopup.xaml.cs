@@ -12,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ShapePainter {
     public partial class GroupViewPopup : Window, INotifyPropertyChanged {
@@ -23,7 +22,7 @@ namespace ShapePainter {
 
         public string name {
             get {
-                return obj is Group ? ((Group) obj).name : obj.GetType().Name;
+                return obj is Group ? ((Group) obj).name : ((Shape) obj).shape.GetType().Name;
             }
             set {
                 ((Group) obj).name = value;
@@ -46,7 +45,7 @@ namespace ShapePainter {
 
 
         private void OnPropertyChanged(string name) {
-            if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
