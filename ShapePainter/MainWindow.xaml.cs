@@ -165,13 +165,13 @@ namespace ShapePainter {
                 },
                 true
             );
+
             if (obj is DecoratedObject) {
-                /* add text */
-                string top = GroupViewPopup.TextTop.Text;
-                this.objects.Add(obj);
-                string toptext = decoratedObject.ornamentShape(top);
-                this.Canvas.Children.Add(toptext);
+                foreach (var text in (obj as DecoratedObject).text) {
+                    
+                }
             }
+
             obj.accept(visitor);
             update_group_view = true;
             Invalidate();
