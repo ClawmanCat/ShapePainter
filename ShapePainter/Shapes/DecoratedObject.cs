@@ -19,26 +19,26 @@ namespace ShapePainter.Shapes {
 
     public class DecoratedObject : ICanvasObject {
         public enum Side { TOP, BOTTOM, LEFT, RIGHT };
-        private Side side;
+        //private Side side;
 
 
         private ICanvasObject obj;
-        private String top;
+        private TextBox top;
 
         private List<(Side, string)> text;
 
         public DecoratedObject(ICanvasObject contained) : base() {
             this.obj = contained;
         }
-        public String ornamentShape(String top)
+        public String ornamentShape(TextBox top)
         {
-            //side = Side.TOP;
-            //if (side == Side.TOP)
-            //{
-            this.top = top ;
-                //TextBox top;
-            //}
-            return top;
+            //this.top = top;
+            ////this.shape contains text top then
+            if (this.obj != null && top != null)
+            {
+                text.Add(Side.TOP, top);
+            }
+            //return top;
         }
         public override void accept(IVisitor visitor) {
             obj.accept(visitor);

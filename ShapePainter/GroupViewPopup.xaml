@@ -11,6 +11,9 @@
             <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="5*"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -29,5 +32,17 @@
             <TextBlock FontSize="12" Text="Text top: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
             <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop_locked}" x:Name="TextTop"></TextBox>
         </StackPanel>
+        <!--<StackPanel Grid.Row="3" Orientation="Horizontal">
+            <TextBlock FontSize="12" Text="Text bottom: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
+            <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop_locked}" x:Name="TextBottom"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <TextBlock FontSize="12" Text="Text left: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
+            <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop_locked}" x:Name="TextLeft"></TextBox>
+        </StackPanel>
+        <StackPanel Grid.Row="5" Orientation="Horizontal">
+            <TextBlock FontSize="12" Text="Text right: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
+            <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=textTop}" IsReadOnly="{Binding Path=textTop_locked}" x:Name="TextRight"></TextBox>
+        </StackPanel>-->
     </Grid>
 </Window>

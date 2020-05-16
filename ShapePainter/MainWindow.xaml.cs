@@ -167,9 +167,10 @@ namespace ShapePainter {
             );
             if (obj is DecoratedObject) {
                 /* add text */
-                String top = "";
+                string top = GroupViewPopup.TextTop.Text;
                 this.objects.Add(obj);
-                this.Canvas.Children.Add(decoratedObject.ornamentShape(top));
+                string toptext = decoratedObject.ornamentShape(top);
+                this.Canvas.Children.Add(toptext);
             }
             obj.accept(visitor);
             update_group_view = true;
@@ -189,8 +190,8 @@ namespace ShapePainter {
             );
             if (obj is DecoratedObject) {
                 /* remove text */
-                String top = "";
-                this.Canvas.Children.Remove(decoratedObject.ornamentShape(top));
+                //String top = "";
+                //this.Canvas.Children.Remove(decoratedObject.ornamentShape(top));
             }
             obj.accept(visitor);
             update_group_view = true;
@@ -334,6 +335,9 @@ namespace ShapePainter {
         }
         private void OnOrnamentButtonClicked(object sender, EventArgs e)
         {
+            var selected = instance.GetSelection();
+            DecoratedObject decoratedobject = new DecoratedObject(selected);
+
             //OrnamentButton.IsChecked = false;
 
             //var selected = instance.GetSelection();
