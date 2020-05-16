@@ -145,12 +145,11 @@ namespace ShapePainter {
 
 
         public void AddCanvasObject(ICanvasObject obj) {
+            this.objects.Add(obj);
+
             var visitor = new GenericVisitor(
-                (Group group) => {
-                    this.objects.Add(group);
-                },
+                (Group group) => { },
                 (Shape shape) => {
-                    this.objects.Add(shape);
                     this.Canvas.Children.Add(shape.shape);
 
                     Canvas.SetLeft(shape.shape, shape.position.X);
@@ -167,9 +166,11 @@ namespace ShapePainter {
 
         public void RemoveCanvasObject(ICanvasObject obj) {
             objects.Remove(obj);
+            
+            obj?.parent.children.Remove(obj);
 
             var visitor = new GenericVisitor(
-                (Group group) => { },
+                (Group group) => {},
                 (Shape shape) => {
                     this.Canvas.Children.Remove(shape.shape);
                 },

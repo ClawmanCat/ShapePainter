@@ -30,6 +30,11 @@ namespace ShapePainter.Shapes {
         }
 
 
+        public virtual bool is_a(Type type) {
+            return this.GetType().IsAssignableFrom(type);
+        }
+
+
         public abstract void accept(IVisitor visitor);
     }
 }

@@ -24,5 +24,20 @@
                <TextBlock FontSize="12" Text="Display name: " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10, 0, 0, 0"></TextBlock>
                <TextBox Height="25" Width="200" FontSize="12" Text="{Binding Path=name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding Path=name_locked}"></TextBox>
           </StackPanel>
+
+         <StackPanel Grid.Row="2">
+              <TextBlock FontSize="12" Text="Ornaments: " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10, 10, 0, 5"></TextBlock>
+
+              <StackPanel Orientation="Horizontal">
+                   <ComboBox Height="20" Width="120" Margin="10 0 0 0" x:Name="OrnamentPicker" SelectionChanged="OnSelectedOrnamentChanged">
+                        <ComboBoxItem x:Name="PickerLeft" IsSelected="True">Left</ComboBoxItem>
+                        <ComboBoxItem x:Name="PickerRight">Right</ComboBoxItem>
+                        <ComboBoxItem x:Name="PickerTop">Top</ComboBoxItem>
+                        <ComboBoxItem x:Name="PickerBottom">Bottom</ComboBoxItem>
+                   </ComboBox>
+
+                   <TextBox Height="25" Width="200" Margin="10 0 0 0" Text="{Binding Path=ornament, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+              </StackPanel>
+         </StackPanel>
      </Grid>
 </Window>

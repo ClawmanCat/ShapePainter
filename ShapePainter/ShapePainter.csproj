@@ -99,6 +99,7 @@
     <Compile Include="GroupViewPopup.xaml.cs">
       <DependentUpon>GroupViewPopup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Shapes\DecoratedShape.cs" />
     <Compile Include="Utility\FunctionBinder.cs" />
     <Compile Include="Utility\GroupViewBuilder.cs" />
     <Compile Include="Shapes\PlatonicForms.cs" />

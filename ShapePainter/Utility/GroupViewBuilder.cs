@@ -50,7 +50,7 @@ namespace ShapePainter.Utility {
 
                     foreach (TreeViewItem i in moved) {
                         ICanvasObject contained_obj = i.Tag as ICanvasObject;
-                        if (contained_obj == null || contained_obj == dest_obj || !(dest_obj is Group) || moved.Any(x => x.Tag == contained_obj.parent)) continue;
+                        if (contained_obj == null || contained_obj == dest_obj || dest_obj.is_a(typeof(Group)) || moved.Any(x => x.Tag == contained_obj.parent)) continue;
 
                         contained_obj.parent.children.Remove(contained_obj);
                         contained_obj.parent = dest_obj;
@@ -80,17 +80,21 @@ namespace ShapePainter.Utility {
                     }
                 };
 
-                if (obj is Shape) {
-                    item.Header = ((Shape) obj).shape.GetType().Name;
-                } else {
-                    item.Header = "[G] " + ((Group) obj).name;
+                var visitor = new GenericVisitor(
+                    (Group group) => {
+                        item.Header = "[G] " + group.name;
 
-                    foreach (var child in obj.children) {
-                        if (MainWindow.instance.HasCanvasObject(child)) item.Items.Add(converter(child));
-                    }
-                }
+                        foreach (var child in obj.children) {
+                            if (MainWindow.instance.HasCanvasObject(child)) item.Items.Add(converter(child));
+                        }
+                    },
+                    (Shape shape) => {
+                        item.Header = shape.shape.GetType().Name;
+                    },
+                    false
+                );
 
-
+                obj.accept(visitor);
                 return item;
             };
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
+using static System.Array;
 using static System.Linq.Enumerable;
 
 
@@ -57,6 +58,15 @@ namespace ShapePainter.Utility {
         public static bool Any(this ItemCollection collection, Func<object, bool> fn) {
             foreach (var obj in collection) if (fn(obj)) return true;
             return false;
+        }
+
+
+        public static int IndexOf(this Array array, object item) {
+            for (int i = 0; i < array.Length; ++i) {
+                if (array.GetValue(i).Equals(item)) return i;
+            }
+
+            return -1;
         }
     }
 }
